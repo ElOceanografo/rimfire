@@ -37,13 +37,8 @@ color_scale <- scale_fill_gradientn(
 echo$datetime = ymd_hm(paste(echo$Date_M, substr(echo$Time_M, 1, 6)))
 echo$Depth_mean = round(echo$Depth_mean, 1)
 
-ggplot(echo, aes(x=datetime, y=-Depth_mean, fill=Sv)) + 
-  geom_tile() +
-  facet_grid(Frequency ~ Date_M, scales="free_x")
-
-ggplot(echo, aes(x=datetime, y=-Depth_mean, color=Sv)) + 
-  geom_point() +
-  facet_grid(Frequency ~ Date_M, scales="free_x")
+ggplot(filter(echo120, Date_M=="20131029"), aes(x=Interval, y=-Layer, fill=Sv_120)) + 
+  geom_tile() + color_scale
 
 
 dB.mean <- function(x, na.rm=T) 10 * log10(mean(10^(x/10), na.rm=na.rm))
