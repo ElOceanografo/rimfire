@@ -1,4 +1,5 @@
 library(ggplot2)
+library(viridis)
 library(reshape2)
 # library(plyr)
 library(dplyr)
@@ -8,48 +9,45 @@ ev.export.dir <- "../acoustics/Exports/"
 files.120 <- list.files(ev.export.dir, "120kHz")
 files.710 <- list.files(ev.export.dir, "710kHz")
 
-echo120 <- plyr::ldply(paste(ev.export.dir, files.120, sep=""), read.csv)
-echo120 <- rename(echo120, Sv_120 = Sv_mean, NASC_120 = NASC)
-echo710 <- plyr::ldply(paste(ev.export.dir, files.710, sep=""), read.csv)
-echo710 <- rename(echo710, Sv_710 = Sv_mean, NASC_710 = NASC)
+files <- data.frame(filename = paste(ev.export.dir, c(files.120, files.710), sep=""),
+                    freq = c(rep(c('120', '710'), each=8)))
+files$lake <- "Cherry"
+files$lake[grepl("eleanor", files$file)] <- "Eleanor"
 
-echo <- plyr::join(echo120, select(echo710, Layer, Date_M, Time_M, Sv_710, NASC_710),
-                   type="full", by=c("Layer", "Date_M", "Time_M"))
-interval2 <- data.frame(Interval = unique(echo$Interval))
-interval2$Interval2 <- 1:nrow(interval2)
-echo <- join(echo, interval2, by="Interval")
+echo <- plyr::ddply(files, "filename", function(x) read.csv(as.character(x$filename)))
+echo <- right_join(files, echo)
+echo$trip <- paste(substr(echo$Date_M, 1, 4), substr(echo$Date_M, 5, 6), sep="-")
+echo$Sv_mean[echo$Sv_mean < -200 | echo$Sv_mean > 0] <- NA
+echo$datetime <- ymd_hms(paste(echo$Date_M, echo$Time_M))
 
-echo <- melt(echo, measure.vars = c("Sv_120", "Sv_710", "NASC_120", "NASC_710"))
-echo[c("variable", "Frequency")] <- colsplit(echo$variable, "_", c("variable", "Frequency"))
-echo <- dcast(echo, ... ~ variable)
-echo$Sv[echo$Sv < -100] <- NA
 
-# Echogram plots
+# echogram
+color_scale_limits = c(-120, -40)
+depth_limits = c(50, 0)
 
-color_scale <- scale_fill_gradientn(
-  colours=rev(c("#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0",
-                "#225ea8", "#253494", "#081d58")), 
-  limits=c(-90, -75),
-  na.value="#00007F",
-  name=expression(S[v]~(dB~re.~1~m^-1))
-)
-
-echo$datetime = ymd_hm(paste(echo$Date_M, substr(echo$Time_M, 1, 6)))
-echo$Depth_mean = round(echo$Depth_mean, 1)
-
-ggplot(filter(echo120, Date_M=="20131029"), aes(x=Interval, y=-Layer, fill=Sv_120)) + 
-  geom_tile() + color_scale
+for (lakename in c("Cherry", "Eleanor")) {
+  p <- ggplot(filter(echo, lake==lakename),
+         aes(x=Interval, y=Layer, fill=Sv_mean)) +
+    geom_tile() + 
+    scale_fill_viridis(limits=color_scale_limits) +
+    scale_y_reverse(limits=depth_limits) +
+    facet_grid(freq ~ Date_M, scales="free_x") + 
+    ylab("Depth (m)") + ggtitle("Eleanor")
+  print(p)
+}
 
 
 dB.mean <- function(x, na.rm=T) 10 * log10(mean(10^(x/10), na.rm=na.rm))
 
-profiles <- dcast(echo, Date_M + Frequency + Depth_mean ~ ., dB.mean, na.rm=T,
-                  value.var="Sv")
+profiles <- dcast(echo, trip + lake + freq + Layer ~ ., dB.mean, na.rm=T,
+                  value.var="Sv_mean")
+profiles <- rename(profiles, Sv = .)
 
-profiles <- plyr::rename(profiles, c("." = "Sv"))
-profiles$Date_M <- as.factor(profiles$Date_M)
-head(profiles)
+ggplot(profiles, aes(x=Layer, y=Sv, color=lake)) + 
+  geom_point() + geom_smooth() +
+  facet_grid(freq ~ trip) + 
+  scale_x_reverse() + coord_flip() + #limits=c(50, 0)) + coord_flip() + 
+  xlab("Depth (m)") + ylab("Mean Sv") + 
+  ggtitle("Backscatter depth profiles") +
+  theme_bw()
 
-ggplot(profiles, aes(y=Sv, x=-Depth_mean, color=Date_M)) + geom_path() + 
-  facet_wrap(~Frequency) + xlim(-50, 0) + 
-  coord_flip()
