@@ -31,8 +31,8 @@ for (lakename in c("Cherry", "Eleanor")) {
     geom_tile() + 
     scale_fill_viridis(limits=color_scale_limits) +
     scale_y_reverse(limits=depth_limits) +
-    facet_grid(freq ~ Date_M, scales="free_x") + 
-    ylab("Depth (m)") + ggtitle("Eleanor")
+    facet_grid(freq ~ trip, scales="free_x") + 
+    ylab("Depth (m)") + ggtitle(lakename)
   print(p)
 }
 
