@@ -37,3 +37,13 @@ p <- ggplot(profiles, aes(x=Layer, y=Sv, color=lake)) +
   ggtitle("Backscatter depth profiles") +
   theme_bw()
 ggsave("graphics/acoustic_profiles.pdf", p, width=12.5, height=7.61, units="in")
+
+p <- ggplot(profiles, aes(x=Layer, y=Sv, color=trip)) + 
+  geom_point(alpha=0.5) + 
+  geom_smooth(se=F) +
+  facet_grid(freq ~ lake) + 
+  scale_x_reverse() + coord_flip() + #limits=c(50, 0)) 
+  xlab("Depth (m)") + ylab("Mean Sv") + 
+  ggtitle("Backscatter depth profiles") +
+  theme_bw()
+ggsave("graphics/acoustic_profiles_date.pdf", p, width=8, height=8, units="in")
