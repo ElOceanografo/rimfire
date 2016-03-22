@@ -1,0 +1,5 @@
+*.Rdata
+*.Rproj
+*.zip
+Shape/*
+*~
