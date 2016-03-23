@@ -1,7 +1,8 @@
 GRAPHICS_DIR = graphics/
 FIGURES = $(addprefix $(GRAPHICS_DIR),\
 		  tracklines.pdf Cherry_echograms.png Eleanor_echograms.png\
-		  acoustic_profiles.pdf acoustic_profiles_date.pdf)
+		  acoustic_profiles.pdf acoustic_profiles_date.pdf \
+		  zoop_length_distributions.pdf)
 
 all : $(FIGURES) 
 	
@@ -20,8 +21,14 @@ graphics/acoustic_profiles.pdf: acoustics.R acoustics.Rdata
 graphics/acoustic_profiles_date.pdf: acoustics.R acoustics.Rdata
 	R CMD BATCH acoustics.R /dev/null
 
+graphics/zoop_length_distributions.pdf: nets.R net_data.Rdata
+	R CMD BATCH nets.R
+
 acoustics.Rdata: load_acoustics.R
 	R CMD BATCH load_acoustics.R /dev/null
+
+net_data.Rdata: load_net_data.R
+	R CMD BATCH load_net_data.R
 
 lake_outlines.Rdata: load_mapdata.R Shape
 	R CMD BATCH load_mapdata.R /dev/null
@@ -33,6 +40,6 @@ NHD_H_1804_Shape.zip:
 	wget https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/NHD/HU4/HighResolution/Shape/NHD_H_1804_Shape.zip
 
 clean:
-	rm *.Rout Rplots.pdf
+	rm *.Rout
 
 
