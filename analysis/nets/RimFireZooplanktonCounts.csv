@@ -1,0 +1,19 @@
+,,,,,,,Group,Copepods,Copepods,Copepods,Copepods,Copepods,Hydroids,Copepods,Copepods,Copepods,Copepods,Cladocerans,Nematode,Cladocerans,Cladocerans,Cladocerans,Cladocerans,Cladocerans,Cladocerans
+,,,,,,,Order,Calanoida,Calanoida,Calanoida,NA,Calanoida,NA,Calanoida,Cyclopoid,Cyclopoid,Cyclopoid,Cladocera,NA,Cladocera,Cladocera,Diplostraca,Ctenopoda,Ctenopoda,Ctenopoda
+,,,,,,,Genus,Epischura,Epischura,Diaptomous,NA,NA,NA,Eurytamora,Euryclops,NA,Orthocyclops,Daphnia,NA,Daphnia,Daphnia,Penilia,Diplostraca,Diplostraca,Diplostraca
+,,,,,,,Species,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,Pulicaria,NA,NA,NA,Avirostris,Pseudorida,Diaphonsoma,Holopedium
+,,,,,,,LifeStage,Adult,Copepodite,Adult,Nauplius,Adult,NA,Adult,Adult,Adult,Adult,Adult,NA,Adult,Nauplius,Adult,bindentata,birgei,gibberum
+Year,Month,Day,Lake,SplitNumber,Counter,QC,Comments,,,,,,,,,,,,,,,,,,
+2014,9,30,Tahoe,TS1-1,SSU,,Training set 1,,,,,,,,,,,,,,,,,,
+2014,9,30,Tahoe,TS2-2,MDA,SSU,Training set 2,28,,28,52,1,,3,7,,,1,1,,,,,,
+2014,9,30,Tahoe,S2,MDA,,,35,10,19,38,4,,1,2,,,2,1,,,,,,
+2014,9,10,Cherry,S2,MDA,,,5,,5,68,3,,6,6,,8,34,1,10,,3,,,
+2014,9,30,Tahoe,TS3-3,MEM,,Training set 3,62,,2,17,,,,,,,,,,,,,,
+2014,9,30,Tahoe,TS4-4,KAH,,Training set 4,85,,7,36,,,,,,,2,,,,,,,
+2014,6,25,Eleanor,S2,MDA,,,7,,5,127,1,,,2,,5,21,,,,,22,,
+2014,6,24,Cherry,S2,MEM,MDA,,260,,,57,,,,,,,,,80,,55,,,
+2014,4,2,Eleanor,S2,MEM,MDA,,35,,,19,,,,,,,,,8,21,8,,,
+2014,9,11,Eleanor,S2,MDA,,,19,2,5,237,,,,9,,,38,2,,,,11,,
+2014,4,1,Cherry,S2,MDA,,,1,1,,30,,,,20,,3,,,,21,10,,3,45
+2014,9,30,Tahoe,S3,MEM,KAH,,105,,30,110,,,,,,,,,,,,,,
+2014,8,30,Eleanor,S1,MDA,,,,4,6,61,,,,65,,67,227,,,,6,50,,
