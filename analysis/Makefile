@@ -12,7 +12,7 @@ graphics/tracklines.pdf: maps.R acoustics.Rdata lake_outlines.Rdata
 graphics/Cherry_echograms.png: acoustics.R acoustics.Rdata
 	R CMD BATCH acoustics.R /dev/null
 
-graphics/Eleanor_echograms.png: acoustics.R acoustics.Rdata
+graphics/Eleanor_echograms.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv
 	R CMD BATCH acoustics.R /dev/null
 
 graphics/acoustic_profiles.pdf: acoustics.R acoustics.Rdata
@@ -23,6 +23,9 @@ graphics/acoustic_profiles_date.pdf: acoustics.R acoustics.Rdata
 
 graphics/zoop_length_distributions.pdf: nets.R net_data.Rdata
 	R CMD BATCH nets.R
+
+nets/zoop_ts.csv: model_zoops.jl net_data.Rdata
+	julia model_zoops.jl
 
 acoustics.Rdata: load_acoustics.R
 	R CMD BATCH load_acoustics.R /dev/null
