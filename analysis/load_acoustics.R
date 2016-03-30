@@ -8,8 +8,8 @@ files.710 <- list.files(ev.export.dir, "710kHz")
 
 files <- data.frame(filename = paste(ev.export.dir, c(files.120, files.710), sep=""),
                     freq = c(rep(c('120', '710'), each=8)))
-files$lake <- "Cherry"
-files$lake[grepl("eleanor", files$file)] <- "Eleanor"
+files$Lake <- "Cherry"
+files$Lake[grepl("eleanor", files$file)] <- "Eleanor"
 
 echo <- plyr::ddply(files, "filename", function(x) read.csv(as.character(x$filename)))
 echo <- right_join(files, echo)
@@ -19,7 +19,7 @@ echo$Lat_M[echo$Lat_M > 90] <- NA
 echo$Lon_M[echo$Lon_M > 90] <- NA
 echo$datetime <- ymd_hms(paste(echo$Date_M, echo$Time_M))
 
-echo <- group_by(echo, trip, lake) %>%
+echo <- group_by(echo, trip, Lake) %>%
   mutate(Interval = plyr::mapvalues(Interval, unique(Interval), 1:length(unique(Interval))),
          Interval = Interval - min(Interval))
 
