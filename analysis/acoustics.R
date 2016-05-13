@@ -9,13 +9,19 @@ load("acoustics.Rdata")
 
 dB.mean <- function(x, na.rm=T) 10 * log10(mean(10^(x/10), na.rm=na.rm))
 
-
 echo <- mutate(echo,
                hour = hour(datetime),
                minute = minute(datetime))
+
+latlon <- echo %>%
+  group_by(trip,Lake,Interval) %>%
+  summarise(Lat_M = mean(Lat_M, na.rm=T),
+            Lon_M = mean(Lon_M, na.rm=T))
+  
 echo <- dcast(echo, 
-           trip+Lake+Date_M+hour+minute+Interval+Lat_M+Lon_M+Layer_depth_max ~ freq,
+           trip+Lake+Date_M+hour+minute+Interval+Layer_depth_max ~ freq,
            value.var="Sv_mean")
+echo <- left_join(echo, latlon)
 echo <- mutate(echo,
             Sv_120 = `120`,
             Sv_710 = `710`,
