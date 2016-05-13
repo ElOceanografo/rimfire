@@ -1,7 +1,8 @@
 GRAPHICS_DIR = graphics/
 FIGURES = $(addprefix $(GRAPHICS_DIR),\
-		  tracklines.pdf Cherry_echograms.png Eleanor_echograms.png\
-		  acoustic_profiles.pdf acoustic_profiles_date.pdf \
+		  tracklines.pdf echo_zooplankton.png echo_fish.png \
+		  echo_classification.png dB_difference.png\
+		  zoop_profiles.png fish_profiles.png \
 		  zoop_length_distributions.pdf)
 
 all : $(FIGURES) 
@@ -9,16 +10,22 @@ all : $(FIGURES)
 graphics/tracklines.pdf: maps.R acoustics.Rdata lake_outlines.Rdata
 	R CMD BATCH maps.R /dev/null
 
-graphics/Cherry_echograms.png: acoustics.R acoustics.Rdata
+graphics/echo_zooplankton.png: acoustics.R acoustics.Rdata
 	R CMD BATCH acoustics.R /dev/null
 
-graphics/Eleanor_echograms.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv
+graphics/echo_fish.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv
 	R CMD BATCH acoustics.R /dev/null
 
-graphics/acoustic_profiles.pdf: acoustics.R acoustics.Rdata
+graphics/echo_classification.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv
 	R CMD BATCH acoustics.R /dev/null
 
-graphics/acoustic_profiles_date.pdf: acoustics.R acoustics.Rdata
+graphics/dB_difference.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv
+	R CMD BATCH acoustics.R /dev/null
+
+graphics/zoop_profiles.pdf: acoustics.R acoustics.Rdata
+	R CMD BATCH acoustics.R /dev/null
+
+graphics/fish_profiles.pdf: acoustics.R acoustics.Rdata
 	R CMD BATCH acoustics.R /dev/null
 
 graphics/zoop_length_distributions.pdf: nets.R net_data.Rdata
@@ -27,7 +34,7 @@ graphics/zoop_length_distributions.pdf: nets.R net_data.Rdata
 nets/zoop_ts.csv: model_zoops.jl net_data.Rdata
 	julia model_zoops.jl
 
-acoustics.Rdata: load_acoustics.R
+acoustics.Rdata: load_acoustics.R ../acoustics/Exports/*
 	R CMD BATCH load_acoustics.R /dev/null
 
 net_data.Rdata: load_net_data.R
