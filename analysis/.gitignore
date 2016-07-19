@@ -1,5 +1,6 @@
 *.Rdata
 *.Rproj
 *.zip
-Shape/*
+NHD_H_1605_Shape/*
+NHD_H_1804_Shape/*
 *~

@@ -40,14 +40,22 @@ acoustics.Rdata: load_acoustics.R ../acoustics/Exports/*
 net_data.Rdata: load_net_data.R
 	R CMD BATCH load_net_data.R
 
-lake_outlines.Rdata: load_mapdata.R Shape
+lake_outlines.Rdata: load_mapdata.R NHD_H_1804_Shape NHD_H_1605_Shape
 	R CMD BATCH load_mapdata.R /dev/null
 
-Shape :  | NHD_H_1804_Shape.zip 
-	unzip NHD_H_1804_Shape.zip 
+NHD_H_1804_Shape :  | NHD_H_1804_Shape.zip 
+	mkdir NHD_H_1804_Shape
+	unzip NHD_H_1804_Shape.zip -d NHD_H_1804_Shape
 
 NHD_H_1804_Shape.zip:
 	wget https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/NHD/HU4/HighResolution/Shape/NHD_H_1804_Shape.zip
+
+NHD_H_1605_Shape :  | NHD_H_1605_Shape.zip 
+	mkdir NHD_H_1605_Shape
+	unzip NHD_H_1605_Shape.zip -d NHD_H_1605_Shape
+
+NHD_H_1605_Shape.zip:
+	wget https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/NHD/HU4/HighResolution/Shape/NHD_H_1605_Shape.zip
 
 clean:
 	rm *.Rout
