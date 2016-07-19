@@ -35,7 +35,7 @@ echo$Sv_fish[echo$class == "Zooplankton" | echo$Sv_fish < -90] <- -Inf
 
 
 p <- ggplot(echo, aes(x=Interval, y=Layer_depth_max, fill=delta)) +
-  geom_tile() + scale_y_reverse() + scale_fill_gradient2() +
+  geom_tile() + scale_y_reverse(limits=c(50, 0)) + scale_fill_gradient2() +
   facet_grid(Lake ~ trip)
 ggsave("graphics/dB_difference.png", p, width=12.5, height=7.61, units="in")
 
