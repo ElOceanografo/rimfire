@@ -119,15 +119,15 @@ Year,Month,Day,Lake,SplitNumber,Counter,Group,Order,Genus,Species,LifeStage,Leng
 2014,Sept,30,Tahoe,3,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.6
 2014,Sept,30,Tahoe,3,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.7
 2014,Sept,30,Tahoe,3,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.6
-2014,June,25,Eleanor,2,MDA,Cladocera,Diplostraca,Pseudorida,bidenta,Adult,0.9
-2014,June,25,Eleanor,2,MDA,Cladocera,Diplostraca,Pseudorida,bidenta,Adult,0.8
-2014,June,25,Eleanor,2,MDA,Cladocera,Diplostraca,Pseudorida,bidenta,Adult,0.9
-2014,June,25,Eleanor,2,MDA,Cladocera,Diplostraca,Pseudorida,bidenta,Adult,0.8
-2014,June,25,Eleanor,2,MDA,Cladocera,Diplostraca,Pseudorida,bidenta,Adult,0.7
-2014,June,25,Eleanor,2,MDA,Cladocera,Diplostraca,Pseudorida,bidenta,Adult,0.6
-2014,June,25,Eleanor,2,MDA,Cladocera,Diplostraca,Pseudorida,bidenta,Adult,0.2
-2014,June,25,Eleanor,2,MDA,Cladocera,Diplostraca,Pseudorida,bidenta,Adult,0.6
-2014,June,25,Eleanor,2,MDA,Cladocera,Diplostraca,Pseudorida,bidenta,Adult,0.5
+2014,June,25,Eleanor,2,MDA,Cladocera,Sididae,Pseudosida,NA,Adult,0.9
+2014,June,25,Eleanor,2,MDA,Cladocera,Sididae,Pseudosida,NA,Adult,0.8
+2014,June,25,Eleanor,2,MDA,Cladocera,Sididae,Pseudosida,NA,Adult,0.9
+2014,June,25,Eleanor,2,MDA,Cladocera,Sididae,Pseudosida,NA,Adult,0.8
+2014,June,25,Eleanor,2,MDA,Cladocera,Sididae,Pseudosida,NA,Adult,0.7
+2014,June,25,Eleanor,2,MDA,Cladocera,Sididae,Pseudosida,NA,Adult,0.6
+2014,June,25,Eleanor,2,MDA,Cladocera,Sididae,Pseudosida,NA,Adult,0.2
+2014,June,25,Eleanor,2,MDA,Cladocera,Sididae,Pseudosida,NA,Adult,0.6
+2014,June,25,Eleanor,2,MDA,Cladocera,Sididae,Pseudosida,NA,Adult,0.5
 2014,June,25,Eleanor,2,MDA,Cladocera,Daphnia ,Pulicaria,NA,Adult,0.5
 2014,June,25,Eleanor,2,MDA,Cladocera,Daphnia ,Pulicaria,NA,Adult,0.3
 2014,June,25,Eleanor,2,MDA,Cladocera,Daphnia ,Pulicaria,NA,Adult,0.4
@@ -156,8 +156,8 @@ Year,Month,Day,Lake,SplitNumber,Counter,Group,Order,Genus,Species,LifeStage,Leng
 2014,June,24,Cherry,2,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.4
 2014,June,24,Cherry,2,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.8
 2014,June,24,Cherry,2,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.7
-2014,June,24,Cherry,2,MEM,Penilia,Diplostraca,Penilia,Avirostris,Adult,1.1
-2014,June,24,Cherry,2,MEM,Penilia,Diplostraca,Penilia,Avirostris,Adult,0.9
+2014,June,24,Cherry,2,MEM,Cladocera,Sididae,NA,NA,Adult,1.1
+2014,June,24,Cherry,2,MEM,Cladocera,Sididae,NA,NA,Adult,0.9
 2014,June,24,Cherry,2,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.9
 2014,June,24,Cherry,2,MEM,Cladocera,Daphnia ,Pulicaria,NA,Adult,0.2
 2014,June,24,Cherry,2,MEM,Cladocera,Daphnia ,Pulicaria,NA,Adult,0.2
@@ -181,15 +181,15 @@ Year,Month,Day,Lake,SplitNumber,Counter,Group,Order,Genus,Species,LifeStage,Leng
 2014,June,24,Cherry,2,MEM,Copepods,Calanoida,NA,NA,Nauplius,0.1
 2014,April,2,Eleanor,2,MEM,Cladocera,Daphnia ,Pulicaria,NA,Adult,0.3
 2014,April,2,Eleanor,2,MEM,Cladocera,Daphnia ,Pulicaria,NA,Adult,0.2
-2014,April,2,Eleanor,2,MEM,Penilia,Diplostraca,Penilia,Avirostris,Adult,0.5
-2014,April,2,Eleanor,2,MEM,Penilia,Diplostraca,Penilia,Avirostris,Adult,0.4
+2014,April,2,Eleanor,2,MEM,Cladocera,Sididae,NA,NA,Adult,0.5
+2014,April,2,Eleanor,2,MEM,Cladocera,Sididae,NA,NA,Adult,0.4
 2014,April,2,Eleanor,2,MEM,Cladocera,Daphnia ,Pulicaria,NA,Adult,0.2
 2014,April,2,Eleanor,2,MEM,Cladocera,Daphnia ,Pulicaria,NA,Adult,0.3
 2014,April,2,Eleanor,2,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.6
 2014,April,2,Eleanor,2,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.8
 2014,April,2,Eleanor,2,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.9
 2014,April,2,Eleanor,2,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.7
-2014,April,2,Eleanor,2,MEM,Cladocera,Diplostraca,Penilia,Avirostris,Adult,0.6
+2014,April,2,Eleanor,2,MEM,Cladocera,Sididae,NA,NA,Adult,0.6
 2014,April,2,Eleanor,2,MEM,Cladocera,Daphnia ,Pulicaria,NA,Adult,0.3
 2014,April,2,Eleanor,2,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.8
 2014,April,2,Eleanor,2,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.7
@@ -207,8 +207,8 @@ Year,Month,Day,Lake,SplitNumber,Counter,Group,Order,Genus,Species,LifeStage,Leng
 2014,April,2,Eleanor,2,MEM,Cladocera,Daphnia ,Pulicaria,NA,Nauplius,0.2
 2014,April,2,Eleanor,2,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.5
 2014,April,2,Eleanor,2,MEM,Cladocera,Daphnia ,Pulicaria,NA,Nauplius,0.2
-2014,April,2,Eleanor,2,MEM,Penilia,Diplostraca,Penilia,Avirostris,Adult,0.6
-2014,April,2,Eleanor,2,MEM,Penilia,Diplostraca,Penilia,Avirostris,Adult,0.5
+2014,April,2,Eleanor,2,MEM,Cladocera,Sididae,NA,NA,Adult,0.6
+2014,April,2,Eleanor,2,MEM,Cladocera,Sididae,NA,NA,Adult,0.5
 2014,Sept,11,Eleanor,2,MDA,Copepods,NA,NA,NA,Nauplius,0.2
 2014,Sept,11,Eleanor,2,MDA,Copepods,NA,NA,NA,Nauplius,0.3
 2014,Sept,11,Eleanor,2,MDA,Copepods,NA,NA,NA,Nauplius,0.2
@@ -249,18 +249,18 @@ Year,Month,Day,Lake,SplitNumber,Counter,Group,Order,Genus,Species,LifeStage,Leng
 2014,April,1,Cherry,2,MDA,Cladocera,Diplostraca,Holopedium,gibberum,Adult,0.6
 2014,April,1,Cherry,2,MDA,Cladocera,Diplostraca,Holopedium,gibberum,Adult,1.1
 2014,April,1,Cherry,2,MDA,Copepods,NA,NA,NA,Nauplius,0.3
-2014,April,1,Cherry,2,MDA,Copepods,NA,daphnia ,pulicaria,Adult,0.5
-2014,April,1,Cherry,2,MDA,Copepods,NA,daphnia ,pulicaria,Adult,0.4
-2014,April,1,Cherry,2,MDA,Copepods,NA,daphnia ,pulicaria,Adult,0.4
-2014,April,1,Cherry,2,MDA,Copepods,NA,daphnia ,pulicaria,Adult,0.6
-2014,April,1,Cherry,2,MDA,Copepods,NA,daphnia ,pulicaria,Adult,1.4
-2014,April,1,Cherry,2,MDA,Copepods,NA,daphnia ,pulicaria,Adult,1.3
-2014,April,1,Cherry,2,MDA,Cladocera,Diplostraca,penilia ,avirostris,Adult,0.9
-2014,April,1,Cherry,2,MDA,Cladocera,Diplostraca,penilia ,avirostris,Adult,1.4
-2014,April,1,Cherry,2,MDA,Cladocera,Diplostraca,penilia ,avirostris,Adult,1.1
-2014,April,1,Cherry,2,MDA,Cladocera,Diplostraca,penilia ,avirostris,Adult,0.6
-2014,April,1,Cherry,2,MDA,Cladocera,Diplostraca,penilia ,avirostris,Adult,0.8
-2014,April,1,Cherry,2,MDA,Cladocera,Diplostraca,penilia ,avirostris,Adult,0.7
+2014,April,1,Cherry,2,MDA,Copepods,Daphnia ,Daphnia ,pulicaria,Adult,0.5
+2014,April,1,Cherry,2,MDA,Copepods,Daphnia ,Daphnia ,pulicaria,Adult,0.4
+2014,April,1,Cherry,2,MDA,Copepods,Daphnia ,Daphnia ,pulicaria,Adult,0.4
+2014,April,1,Cherry,2,MDA,Copepods,Daphnia ,Daphnia ,pulicaria,Adult,0.6
+2014,April,1,Cherry,2,MDA,Copepods,Daphnia ,Daphnia ,pulicaria,Adult,1.4
+2014,April,1,Cherry,2,MDA,Copepods,Daphnia ,Daphnia ,pulicaria,Adult,1.3
+2014,April,1,Cherry,2,MDA,Cladocera,Sididae,NA,NA,Adult,0.9
+2014,April,1,Cherry,2,MDA,Cladocera,Sididae,NA,NA,Adult,1.4
+2014,April,1,Cherry,2,MDA,Cladocera,Sididae,NA,NA,Adult,1.1
+2014,April,1,Cherry,2,MDA,Cladocera,Sididae,NA,NA,Adult,0.6
+2014,April,1,Cherry,2,MDA,Cladocera,Sididae,NA,NA,Adult,0.8
+2014,April,1,Cherry,2,MDA,Cladocera,Sididae,NA,NA,Adult,0.7
 2014,Sept,30,Tahoe,3,MEM,Copepods,Calanoida,Diaptomus,NA,Adult,0.3
 2014,Sept,30,Tahoe,3,MEM,Copepods,NA,NA,NA,Nauplius,0.1
 2014,Sept,30,Tahoe,3,MEM,Copepods,Calanoida,Epischura,NA,Adult,0.6
@@ -322,3 +322,124 @@ Year,Month,Day,Lake,SplitNumber,Counter,Group,Order,Genus,Species,LifeStage,Leng
 2013,Oct,30,Eleanor,1,MDA,Cladocera,Daphnia ,Pulicaria,NA,Adult,1.1
 2013,Oct,30,Eleanor,1,MDA,Cladocera,Daphnia ,Pulicaria,NA,Adult,0.9
 2013,Oct,30,Eleanor,1,MDA,Cladocera,Daphnia ,Pulicaria,NA,Adult,1.2
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,0.6
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1.1
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,0.9
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1.1
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,0.8
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,0.8
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,0.8
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,0.9
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1.3
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,0.9
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,0.9
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1.1
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.7
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.8
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.7
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.6
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.8
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.7
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.7
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,1
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.5
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,1
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.4
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,,0.3
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,,0.3
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,,0.4
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,,0.4
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.8
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.7
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.8
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.6
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.9
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.8
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.8
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.25
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.3
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.3
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.2
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.2
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.2
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.2
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.2
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.2
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.2
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.2
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.2
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1.2
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1.1
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1.2
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Calanoida,NA,NA,Adlt,0.4
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Calanoida,NA,NA,Adlt,0.4
+2013,Oct,29,Cherry,Recount,CLT,Copepods,NA,NA,NA,Nauplius,0.1
+2013,Oct,29,Cherry,Recount,CLT,Copepods,NA,NA,NA,Nauplius,0.1
+2013,Oct,29,Cherry,Recount,CLT,Copepods,NA,NA,NA,Nauplius,0.1
+2013,Oct,29,Cherry,Recount,CLT,Copepods,NA,NA,NA,Nauplius,0.1
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Adult,2
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Epischura,NA,Adult,1
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Epischura,NA,Adult,2
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Adult,1.5
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,NA,NA,Copepodite,1
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Adult,2
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,NA,NA,Copepodite,0.5
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Epischura,NA,Adult,1.5
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Adult,1.5
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Adult,1.5
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,NA,NA,Copepodite,1
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Adult,1
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,NA,NA,Copepodite,0.5
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,NA,NA,Copepodite,0.5
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,NA,NA,Adult,1
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Adult,1.5
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,NA,NA,Nauplius,0.2
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Epischura,NA,Adult,2
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Adult,1
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,NA,NA,Nauplius,0.2
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,NA,NA,Nauplius,0.2
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,NA,NA,Copepodite,0.8
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Adult,1.5
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Adult,1.5
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Epischura,NA,Adult,1
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Adult,1
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Adult,2
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Epischura,NA,Copepodite,0.8
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Epischura,NA,Copepodite,0.8
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Copepodite,1
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,Diaptomous,NA,Adult,2
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,NA,NA,Copepodite,1
+2013,Oct,21,Tahoe,1,SSU,Copepods,Calanoida,NA,NA,Copepodite,1
+2013,Oct,20,Independence,1,SSU,Copepods,Cyclopoida,Diacyclops,thomasi,Adult,1
+2013,Oct,20,Independence,1,SSU,Copepods,Cyclopoida,Diacyclops,thomasi,Adult,1
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,0.8
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,0.7
+2013,Oct,20,Independence,1,SSU,Copepods,Cyclopoida,Diacyclops,thomasi,Adult,0.5
+2013,Oct,20,Independence,1,SSU,Copepods,Cyclopoida,Diacyclops,thomasi,Adult,0.9
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,0.8
+2013,Oct,20,Independence,1,SSU,Copepods,Cyclopoida,Diacyclops,thomasi,Adult,1
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,1
+2013,Oct,20,Independence,1,SSU,Copepods,Cyclopoida,Diacyclops,thomasi,Adult,1
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,1
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,1
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,1
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,1
+2013,Oct,20,Independence,1,SSU,Copepods,Cyclopoida,Diacyclops,thomasi,Adult,0.8
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,1
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,1
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,1
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,0.6
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,0.6
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,0.6
+2013,Oct,20,Independence,1,SSU,Cladocera,Bosmina,Bosmina,longirostris,Adult,0.4
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,middendorffiana,Adult,1.2
+2013,Oct,20,Independence,1,SSU,Copepods,Cyclopoida,Diacyclops,thomasi,Adult,0.9
+2013,Oct,20,Independence,1,SSU,Copepods,Cyclopoida,Diacyclops,thomasi,Adult,0.9
+2013,Oct,20,Independence,1,SSU,Copepods,Cyclopoida,Diacyclops,thomasi,Adult,0.8
+2013,Oct,20,Independence,1,SSU,Cladocera,Daphnia ,Daphnia ,NA,Adult,1
+2013,Oct,20,Independence,1,SSU,Copepods,Cyclopoida,Diacyclops,thomasi,Copepodite,0.5
