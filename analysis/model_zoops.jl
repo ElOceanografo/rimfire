@@ -7,7 +7,9 @@ srand(697180031068324823)
 dB_mean(x) = 10 * log10(mean(10.^(x ./ 10)))
 
 rdata = read_rda("net_data.Rdata", convertdataframes=true)
-individuals = rdata["individuals"]
+individuals = @linq rdata["individuals"] |>
+	where(:LifeStage .!= "Nauplius")
+
 counts = rdata["counts"]
 
 summary_lengths = @linq individuals |>
@@ -22,8 +24,9 @@ zoop_ts = by(individuals, [:trip, :Lake, :Group]) do df
 	else animal == "Cladocerans"
 		scat = Models.daphnia
 	end
-	
-	L = Normal(mean(df[:Length]) / 1e3, std(df[:Length]) / 1e3)
+
+	sigma = max(std(df[:Length]), 0.1)
+	L = Normal(mean(df[:Length]) / 1e3, sigma / 1e3)
 	TS120 = zeros(nsim)
 	TS710 = zeros(nsim)
 	for i in 1:nsim
