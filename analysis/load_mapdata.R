@@ -4,7 +4,7 @@ library(rgdal)
 
 
 water.1 <- rgdal::readOGR("NHD_H_1804_Shape/Shape", "NHDWaterbody")
-water.1 <- spTransform(water, CRS("+proj=longlat"))
+water.1 <- spTransform(water.1, CRS("+proj=longlat"))
 
 sort(unique(water.1@data$GNIS_NAME))
 lake.ids.1 <- which(water.1[["GNIS_NAME"]] %in% c("Cherry Lake", "Lake Eleanor"))
