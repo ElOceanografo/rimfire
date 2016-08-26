@@ -348,10 +348,10 @@ Year,Month,Day,Lake,SplitNumber,Counter,Group,Order,Genus,Species,LifeStage,Leng
 2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.5
 2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,1
 2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.4
-2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,,0.3
-2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,,0.3
-2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,,0.4
-2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,,0.4
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.3
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.3
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.4
+2013,Oct,30,Eleanor,Recount,CLT,Cladocera,Bosmina,Bosmina,NA,Adult,0.4
 2013,Oct,29,Cherry,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.8
 2013,Oct,29,Cherry,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.7
 2013,Oct,29,Cherry,Recount,CLT,Cladocera,Cyclopoid,Euryclops,NA,Adult,0.8
@@ -376,8 +376,8 @@ Year,Month,Day,Lake,SplitNumber,Counter,Group,Order,Genus,Species,LifeStage,Leng
 2013,Oct,29,Cherry,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1.1
 2013,Oct,29,Cherry,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1
 2013,Oct,29,Cherry,Recount,CLT,Cladocera,Daphnia ,NA,NA,Adult,1.2
-2013,Oct,29,Cherry,Recount,CLT,Cladocera,Calanoida,NA,NA,Adlt,0.4
-2013,Oct,29,Cherry,Recount,CLT,Cladocera,Calanoida,NA,NA,Adlt,0.4
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Calanoida,NA,NA,Adult,0.4
+2013,Oct,29,Cherry,Recount,CLT,Cladocera,Calanoida,NA,NA,Adult,0.4
 2013,Oct,29,Cherry,Recount,CLT,Copepods,NA,NA,NA,Nauplius,0.1
 2013,Oct,29,Cherry,Recount,CLT,Copepods,NA,NA,NA,Nauplius,0.1
 2013,Oct,29,Cherry,Recount,CLT,Copepods,NA,NA,NA,Nauplius,0.1
