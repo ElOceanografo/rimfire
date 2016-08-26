@@ -30,7 +30,7 @@ taxa <- read.csv("nets/RimFireZooplanktonCounts.csv", nrows=5, header=F) %>%
   slice(9:n()) %>%
   rename(Group = V1, Order = V2, Genus = V3, Species = V4, LifeStage = V5) %>%
   mutate(Group = gsub("Penilia", "Cladocera", Group),
-         taxon.code = paste0("X.", 0:17)) %>%
+         taxon.code = paste0("X.", 0:(n() - 1))) %>%
   droplevels()
 
 counts <- left_join(counts, taxa, by="taxon.code")
