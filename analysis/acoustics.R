@@ -6,8 +6,20 @@ library(dplyr)
 library(lubridate)
 
 load("acoustics.Rdata")
+zoop.ts <- read.csv("nets/zoop_ts.csv")
 
 dB.mean <- function(x, na.rm=T) 10 * log10(mean(10^(x/10), na.rm=na.rm))
+
+zoop.ts %>%
+  group_by(trip, Lake, freq) %>%
+  summarize(TS = 10*log10(mean(10^(TS/10) * proportion))) %>%
+  dcast(trip + Lake ~ freq, value.var="TS") %>%
+  mutate(delta = `120` - `710`)
+
+mean.ts <- zoop.ts %>%
+  group_by(trip, Lake) %>%
+  summarize(sigma = sum(10^(TS/10) * proportion),
+            TS = 10*log10(sigma))
 
 echo <- mutate(echo,
                hour = hour(datetime),
@@ -29,7 +41,7 @@ echo <- mutate(echo,
             class = "Zooplankton",
             Sv_zoop = Sv_710,
             Sv_fish = Sv_120)
-echo$class[echo$delta > -3 | echo$Sv_120 > -60] <- "Fish"
+echo$class[echo$delta > -10 | echo$Sv_120 > -60] <- "Fish"
 echo$Sv_zoop[echo$class == "Fish"] <- NA
 echo$Sv_fish[echo$class == "Zooplankton" | echo$Sv_fish < -90] <- -Inf
 
@@ -73,19 +85,23 @@ profiles <- echo %>%
   melt(measure.vars=c("Sv_zoop", "Sv_fish"), variable.name="class", value.name="Sv") %>%
   mutate(sv = 10^(Sv / 10))
 profiles$sv[is.na(profiles$sv)] <- 0
+profiles <- left_join(profiles, mean.ts)
+profiles <- mutate(profiles, density = sv / sigma)
+
+x_scale <- 1e-3
+p <- filter(profiles, class=="Sv_zoop") %>% 
+  ggplot(aes(x=Layer_depth_max, y=density * x_scale, color=Lake)) + 
+  geom_point(size=0.5) + geom_line() +
+  facet_grid(. ~ trip) + 
+  scale_x_reverse(limits=c(25, 0), expand=c(0, 0)) + 
+  coord_flip() + ylim(0, 200) +
+  xlab("Depth (m)") + ylab(expression(Numerical~density~(x10^3~m^-3))) + 
+  theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
+# p
+ggsave("graphics/zoop_profiles.png", p, width=7, height=3, units="in")
+
 
 x_scale <- 1e6
-p <- filter(profiles, class=="Sv_zoop") %>% 
-  ggplot(aes(x=Layer_depth_max, y=sv * x_scale, color=Lake)) + 
-    geom_point() + geom_line() +
-    facet_grid(. ~ trip) + 
-    scale_x_reverse(limits=c(25, 0)) + coord_flip() + ylim(0, 2) +
-    xlab("Depth (m)") + ylab(expression(Mean~s[v]~(mm^2~m^-3))) + 
-    ggtitle("Zooplankton") +
-    theme_bw()
-# p
-ggsave("graphics/zoop_profiles.pdf", p, width=12.5, height=7.61, units="in")
-
 p <- filter(profiles, class=="Sv_fish") %>% 
   ggplot(aes(x=Layer_depth_max, y=sv * x_scale, color=Lake)) + 
   geom_point(size=0.5) + geom_path() +#geom_smooth(span=0.2, se=F) +
@@ -93,10 +109,9 @@ p <- filter(profiles, class=="Sv_fish") %>%
   scale_x_reverse(limits=c(60, 0)) + 
   scale_y_continuous(limits=c(0, 10)) +
   xlab("Depth (m)") + ylab(expression(Mean~s[v]~(mm^2~m^-3))) + 
-  ggtitle("Fish") +
-  theme_bw()
-# p
-ggsave("graphics/fish_profiles.pdf", p, width=12.5, height=7.61, units="in")
+  theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
+p
+ggsave("graphics/fish_profiles.png", p, width=7, height=3, units="in")
 
 
 ################################################################################
