@@ -7,25 +7,42 @@ srand(697180031068324823)
 dB_mean(x) = 10 * log10(mean(10.^(x ./ 10)))
 
 rdata = read_rda("net_data.Rdata", convertdataframes=true)
-individuals = @linq rdata["individuals"] |>
-	where(:LifeStage .!= "Nauplius")
+individuals = rdata["individuals"]
 
-counts = rdata["counts"]
+counts = rdata["counts"] 
+
+
+individuals[:model] = copy(individuals[:Group])
+individuals[:model][individuals[:LifeStage] .== "Nauplius"] = "Nauplius"
+individuals = @where(individuals, (:model .== "Copepods") | (:model .== "Cladocerans") | (:model .== "Nauplius"))
+
+counts[:model] = copy(counts[:Group])
+counts[:model][counts[:LifeStage] .== "Nauplius"] = "Nauplius"
+counts = @where(counts, (:model .== "Copepods") | (:model .== "Cladocerans") | (:model .== "Nauplius"))
+
 
 summary_lengths = @linq individuals |>
-	by([:trip, :Lake, :Group], mean=mean(:Length), std=std(:Length))
+	by([:trip, :Lake, :model], mean_length=mean(:Length))
 
+# Length-weight regressions from Culver et al. 1985, CJFAS
+# W = a*L^b (W in micrograms, L in mm)
+lw_regression = DataFrame(
+	model = ["Copepods", "Cladocerans", "Nauplius"],
+	a = [7, 7.4977, 3.0093],
+	b = [2.1, 1.5644, 1.7064])
+
+individuals = join(individuals, lw_regression, on=[:model], kind=:left)
+individuals = @transform(individuals, weight = :a .* :Length.^:b * 1e-6)
+
+
+models = Dict("Copepods" => Models.calanoid_copepod,
+			  "Nauplius" => Models.nauplius,
+			  "Cladocerans" => Models.daphnia2)
 
 nsim = 1000
-zoop_ts = by(individuals, [:trip, :Lake, :Group]) do df
-	animal = first(df[:Group])
-	if animal == "Copepods"
-		scat = Models.calanoid_copepod
-	else animal == "Cladocerans"
-		scat = Models.daphnia
-	end
-
-	sigma = max(std(df[:Length]), 0.1)
+zoop_ts = by(individuals, [:trip, :Lake, :model]) do df
+	scat = models[first(df[:model])]
+	sigma = max(std(df[:Length]), 0.0002)
 	L = Normal(mean(df[:Length]) / 1e3, sigma / 1e3)
 	TS120 = zeros(nsim)
 	TS710 = zeros(nsim)
@@ -34,24 +51,19 @@ zoop_ts = by(individuals, [:trip, :Lake, :Group]) do df
 		TS120[i] = target_strength(s, 120e3, sound_speed)
 		TS710[i] = target_strength(s, 710e3, sound_speed)
 	end
-	DataFrame(freq = [120, 710], TS = [dB_mean(TS120), dB_mean(TS710)])
+	DataFrame(freq = [120, 710],
+		TS = [dB_mean(TS120), dB_mean(TS710)],
+		weight = [mean(df[:weight]), mean(df[:weight])])
 end
 
-proportions = @based_on(groupby(counts, [:trip, :Lake, :Group]), n = sum(:Count))
+proportions = @based_on(groupby(counts, [:trip, :Lake, :model]), n = sum(:Count))
+totals = @by(counts, [:trip, :Lake], total = sum(:Count))
 proportions = @linq proportions |>
-	unstack(:Group, :n) |>
-	transform(Total =  :Cladocerans + :Copepods) |>
-	transform(pcope = :Copepods ./ :Total) |>
-	select(:trip, :Lake, :pcope)
+	join(totals, on=[:trip, :Lake]) |>
+	transform(proportion = :n ./ :total)
 
 
-zoop_ts = join(zoop_ts, proportions, on=[:trip, :Lake])
-@byrow! zoop_ts begin
-	if :Group == "Cladocerans"
-		:pcope = 1 - :pcope
-	end
-end
-rename!(zoop_ts, :pcope, :proportion)
+zoop_ts = join(zoop_ts, proportions, on=[:trip, :Lake, :model])
 
 
 writetable("nets/zoop_ts.csv", zoop_ts)
