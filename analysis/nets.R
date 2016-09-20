@@ -7,15 +7,19 @@ individuals <- individuals %>%
   filter(!((trip == "2014-09") & (Lake=="Tahoe")))
 
 counts <- counts %>%
-  filter(!((trip == "2014-09") & (Lake=="Tahoe")))
+  filter(!((trip == "2014-09") & (Lake=="Tahoe"))) %>%
+  mutate(Genus = gsub("Diaptomous", "Leptodiaptomus", Genus))
 
+counts %>%
+  filter(Lake %in% c("Cherry", "Eleanor")) %>%
+  group_by
 
 totals <- counts %>%
   group_by(trip, Lake) %>%
   summarize(total = sum(Count))
 
 summary.counts <- counts %>%
-  filter(Group %in% c("Copepods", "Cladocerans")) %>%
+  filter(!Group %in% c("Rotifers", "Nematode", "Hydroids")) %>%
   mutate(Genus = as.character(Genus),
          Group = as.character(Group)) %>%
   group_by(trip, Lake, Group, Genus) %>%
@@ -25,6 +29,7 @@ summary.counts <- counts %>%
 
 summary.counts$Genus[is.na(summary.counts$Genus) & summary.counts$Group == "Copepods"] <- "Unk. Cope."
 summary.counts$Genus[is.na(summary.counts$Genus) & summary.counts$Group == "Cladocerans"] <- "Unk. Clad."
+summary.counts$Genus[is.na(summary.counts$Genus) & summary.counts$Group == "Ostracods"] <- "Unk. Ostracods"
 genus.levels <- unique(arrange(summary.counts, desc(Group), desc(Genus))$Genus)
 
 summary.counts <- summary.counts %>%
@@ -42,7 +47,7 @@ ggsave("graphics/zoop_composition_indy_tahoe.png", p, w=5, h=3, units="in")
 
 
 p <- summary.counts %>%
-  filter(Lake %in% c("Cherry", "Eleanor")) %>%
+  filter(Lake %in% c("Cherry", "Eleanor"), Group != "Ostracods", Genus != "Diacyclops") %>%
   ggplot(aes(x=Genus, y=Percent, fill=Group)) + 
     geom_bar(stat="identity") + coord_flip() +
     scale_fill_grey(guide = guide_legend(reverse=TRUE)) +
@@ -50,11 +55,30 @@ p <- summary.counts %>%
     theme_minimal()
 ggsave("graphics/zoop_composition_cherry_eleanor.png", p, w=7.5, h=4.5, units="in")
 
+summary.cherry.eleanor <- counts %>%
+  filter(Lake %in% c("Cherry", "Eleanor"), Group %in% c("Cladocerans", "Copepods")) %>%
+  group_by(trip, Lake, Group) %>%
+  summarise(Count = sum(Count)) %>%
+  left_join(totals) %>%
+  mutate(Percent = Count / total * 100)
+
+ggplot(summary.cherry.eleanor, aes(x=trip, y=Percent, fill=Group)) + 
+  geom_bar(stat="identity") + facet_wrap(~Lake)
+summary.cherry.eleanor %>%
+  select(-Count, -total) %>%
+  spread(Group, Percent)
+
+counts %>%
+  filter(Lake %in% c("Cherry", "Eleanor")) %>%
+  group_by(trip, Lake) %>%
+  filter(Count > 0) %>%
+  summarise(richness = length(unique(paste(Group, Genus, Species)))) %>%
+  spread(Lake, richness)
 
 
-
+## Individual length distributions
 individuals <- individuals %>%
-  filter(LifeStage=="Adult")
+  filter(LifeStage!="Nauplius")
 
 p.indy.tahoe <- individuals %>%
   filter(Lake %in% c("Independence", "Tahoe")) %>%
