@@ -3,6 +3,7 @@ library(scales)
 library(viridis)
 library(reshape2)
 library(dplyr)
+library(tidyr)
 library(lubridate)
 
 load("acoustics.Rdata")
@@ -15,11 +16,6 @@ zoop.ts %>%
   summarize(TS = 10*log10(mean(10^(TS/10) * proportion))) %>%
   dcast(trip + Lake ~ freq, value.var="TS") %>%
   mutate(delta = `120` - `710`)
-
-mean.ts <- zoop.ts %>%
-  group_by(trip, Lake) %>%
-  summarize(sigma = sum(10^(TS/10) * proportion),
-            TS = 10*log10(sigma))
 
 echo <- mutate(echo,
                hour = hour(datetime),
@@ -78,6 +74,26 @@ ggsave("graphics/echo_fish.png", p, width=12.5, height=7.61, units="in")
 ################################################################################
 # Depth profiles
 ################################################################################
+
+# sv = sum(sigma_i * n_i)
+ts.display.table <- zoop.ts %>%
+  filter(freq == 710) %>%
+  mutate(percent = round(proportion*100),
+         weight = round(weight * 1e6, 1),
+         TS = round(TS, 1)) %>%
+  select(-freq, -total, -proportion) %>%
+  melt(measure.vars = c("TS", "weight", "n", "percent")) %>%
+  dcast(trip + Lake ~ model + variable)
+write.csv(ts.display.table, "nets/ts.display.table.csv")
+
+
+mean.ts <- zoop.ts %>%
+  filter(freq == 710) %>%
+  group_by(trip, Lake) %>%
+  summarize(sigma = sum(10^(TS/10) * proportion),
+            TS = 10*log10(sigma),
+            weight = sum(weight * proportion))
+
 profiles <- echo %>%
   group_by(trip, Lake, Layer_depth_max) %>%
   summarise(Sv_zoop = dB.mean(Sv_zoop, na.rm=T),
@@ -86,99 +102,76 @@ profiles <- echo %>%
   mutate(sv = 10^(Sv / 10))
 profiles$sv[is.na(profiles$sv)] <- 0
 profiles <- left_join(profiles, mean.ts)
-profiles <- mutate(profiles, density = sv / sigma)
+profiles <- mutate(profiles, 
+                   density = sv / sigma, 
+                   biomass = density * weight)
 
-x_scale <- 1e-3
-p <- filter(profiles, class=="Sv_zoop") %>% 
-  ggplot(aes(x=Layer_depth_max, y=density * x_scale, color=Lake)) + 
-  geom_point(size=0.5) + geom_line() +
-  facet_grid(. ~ trip) + 
-  scale_x_reverse(limits=c(25, 0), expand=c(0, 0)) + 
-  coord_flip() + ylim(0, 200) +
-  xlab("Depth (m)") + ylab(expression(Numerical~density~(x10^3~m^-3))) + 
+p <- filter(profiles, class=="Sv_zoop", Layer_depth_max <= 25) %>% 
+  ggplot(aes(y=Layer_depth_max, x=biomass*1000, linetype=Lake, shape=Lake)) + 
+  geom_point(size=1) + geom_path() +
+  facet_wrap(~trip, nrow=1, scales="free_x") +
+  scale_y_reverse(limits=c(25, 0), expand=c(0, 0)) + 
+  ylab("Depth (m)") + xlab(expression(Biomass~(mg~m^-3))) + 
   theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
-# p
-ggsave("graphics/zoop_profiles.png", p, width=7, height=3, units="in")
+p
+ggsave("graphics/zoop_profiles.png", p, width=7, height=4, units="in")
 
 
 x_scale <- 1e6
 p <- filter(profiles, class=="Sv_fish") %>% 
-  ggplot(aes(x=Layer_depth_max, y=sv * x_scale, color=Lake)) + 
-  geom_point(size=0.5) + geom_path() +#geom_smooth(span=0.2, se=F) +
-  facet_grid(. ~ trip) + coord_flip() +
-  scale_x_reverse(limits=c(60, 0)) + 
-  scale_y_continuous(limits=c(0, 10)) +
-  xlab("Depth (m)") + ylab(expression(Mean~s[v]~(mm^2~m^-3))) + 
+  ggplot(aes(y=Layer_depth_max, x=sv*x_scale, linetype=Lake, shape=Lake)) + 
+  geom_point(size=1) + geom_path() +
+  facet_wrap(~trip, nrow=1, scales="free_x") +
+  scale_y_reverse(limits=c(60, 0), expand=c(0, 0)) + 
+  ylab("Depth (m)") + xlab(expression(Mean~s[v]~(mm^2~m^-3))) + 
   theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
 p
 ggsave("graphics/fish_profiles.png", p, width=7, height=3, units="in")
 
 
+lake_areas = data.frame(
+  Lake = c("Tahoe", "Independence", "Cherry", "Eleanor"),
+  area = c(490, 2.6, 6.3, 3.9)
+)
+lake_areas <- mutate(lake_areas, area = area * 1000^2)
+  
+lake.biomass <- profiles %>%
+  filter(class=="Sv_zoop", Layer_depth_max < 25) %>%
+  group_by(Lake, trip) %>%
+  summarise(biomass = sum(biomass)) %>%
+  left_join(lake_areas, by="Lake") %>%
+  mutate(total = signif(biomass * area / 1e3, 3)) %>%
+  select(-area)
+
+lake.biomass %>%
+  select(-biomass) %>%
+  spread(trip, total)
+
+lake.biomass %>%
+  select(-total) %>%
+  spread(trip, biomass)
+
+ggplot(filter(lake.biomass), aes(x=trip, y=biomass, fill=Lake)) +
+  geom_bar(stat="identity", position="dodge")
+
+ggplot(filter(lake.biomass), aes(x=trip, y=total, fill=Lake)) +
+  geom_bar(stat="identity", position="dodge")
+
+
 ################################################################################
 # Track lines
 ################################################################################
-tracks <- echo %>%
-  filter(Layer_depth_max < 50) %>%
+tracks <-  echo %>%
+  filter(Layer_depth_max < 50, class=="Zooplankton") %>%
   group_by(trip, Lake, Interval, Lat_M, Lon_M) %>%
-  summarise(Sv_zoop = dB.mean(Sv_zoop, na.rm=T),
-            Sv_fish = dB.mean(Sv_fish, na.rm=T),
-            bottom = max(Layer_depth_max))%>%
-  melt(measure.vars=c("Sv_zoop", "Sv_fish"), variable.name="class", value.name="Sv") %>%
-  mutate(class = gsub("Sv_", "", class),
-         sv = 10^(Sv/10))
-
+  summarise(Sv = dB.mean(Sv_zoop, na.rm=T),
+            sv = 10^(Sv / 10),
+            bottom = max(Layer_depth_max),
+            sa = bottom * sv) %>%
+  left_join(mean.ts) %>%
+  mutate(density = sa / sigma,
+         biomass = density * weight) %>%
+  select(trip, Lake, Lon_M, Lat_M, Interval, sv, sa, bottom, density, biomass) %>%
 
 save(tracks, file="tracks.Rdata")
 
-
-# zoop.ts <- read.csv("nets/zoop_ts.csv")
-# zoop.ts <- mutate(zoop.ts,
-#                   freq = as.factor(freq),
-#                   trip = as.character(trip),
-#                   Lake = as.character(Lake),
-#                   sigma = 10^(TS/10),
-#                   sigma.total = sigma * proportion)
-# 
-# echo <- group_by(zoop.ts, trip, Lake, freq) %>%
-#   summarize(sigma.total = sum(sigma.total, na.rm=T)) %>%
-#   right_join(echo, by=c("trip", "Lake", "freq"))
-# 
-# 
-# proportions <- dcast(zoop.ts, trip + Lake + freq ~ Group, value.var="proportion")
-# echo <- left_join(echo, proportions, by=c("trip", "Lake", "freq"))
-# 
-# echo <- mutate(echo,
-#                sv_mean = 10^(Sv_mean / 10),
-#                n.total = sv_mean / sigma.total,
-#                n.copepods = n.total * Copepods,
-#                n.cladocerans = n.total * Cladocerans)
-
-# 
-# densities <- echo %>%
-#   filter(freq == 710) %>%
-#   select(trip, Lake, Interval, Layer, n.total, n.copepods, n.cladocerans)
-# 
-# 
-# density_limits <- c(0, 8)
-# p <- ggplot(densities, aes(x=Interval, y=Layer, fill=log10(n.total))) +
-#   geom_tile() + 
-#   scale_fill_viridis(limits=density_limits) +
-#   scale_y_reverse(limits=depth_limits) + 
-#   facet_grid(Lake ~ trip, scales="free_x") + 
-#   ylab("Depth (m)") + ggtitle("Total density")
-# 
-# p <- ggplot(densities, aes(x=Interval, y=Layer, fill=log10(n.copepods))) +
-#   geom_tile() + 
-#   scale_fill_viridis(limits=density_limits) +
-#   scale_y_reverse(limits=depth_limits) + 
-#   facet_grid(Lake ~ trip, scales="free_x") + 
-#   ylab("Depth (m)") + ggtitle("Copepod density")
-# 
-# p <- ggplot(densities, aes(x=Interval, y=Layer, fill=log10(n.cladocerans))) +
-#   geom_tile() + 
-#   scale_fill_viridis(limits=density_limits) +
-#   scale_y_reverse(limits=depth_limits) + 
-#   facet_grid(Lake ~ trip, scales="free_x") + 
-#   ylab("Depth (m)") + ggtitle("Cladoceran density")
-# 
-# ggplot(zoop.ts, aes(x=TS, fill=Group)) + geom_histogram(position="dodge")
