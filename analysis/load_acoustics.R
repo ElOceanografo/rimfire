@@ -2,6 +2,7 @@ library(reshape2)
 library(dplyr)
 library(lubridate)
 
+# Volume backscatter
 ev.export.dir <- "../acoustics/Exports/"
 files.120 <- list.files(ev.export.dir, "120kHz", full.names = T)
 files.710 <- list.files(ev.export.dir, "710kHz", full.names = T)
@@ -26,3 +27,27 @@ echo <- group_by(echo, trip, Lake) %>%
          Interval = Interval - min(Interval))
 
 save(echo, file="acoustics.Rdata")
+
+# Single targets
+target.files <- data.frame(filename = list.files(ev.export.dir, "target", full.names = T))
+target.files$Lake <- "Cherry"
+target.files$Lake[grepl("eleanor", target.files$file)] <- "Eleanor"
+target.files$Lake[grepl("tahoe", target.files$file)] <- "Tahoe"
+target.files$Lake[grepl("independence", target.files$file)] <- "Independence"
+target.files$freq <- 120
+target.files$beam <- "Split"
+target.files$freq[target.files$Lake == "Independence"] <- 710
+target.files$beam[target.files$Lake == "Independence"] <- "Single"
+
+targets <- plyr::ddply(target.files, "filename", function(x) read.csv(as.character(x$filename)))
+targets <- right_join(target.files, targets) %>%
+  select(filename, Lake, Ping_date, Ping_time, Ping_milliseconds, Target_range,
+         TS_comp, TS_uncomp, Angle_minor_axis, Angle_major_axis, Transmitted_pulse_length,
+         Target_latitude, Target_longitude, Ping_number)
+
+targets$Target_latitude[targets$Target_latitude < -180] <- NA
+targets$Target_longitude[targets$Target_longitude < -180] <- NA
+targets$datetime <- ymd_hms(paste(targets$Ping_date, targets$Ping_time))
+targets$trip <- strftime(targets$datetime, "%Y-%m")
+  
+save(targets, file="single_targets.Rdata")
