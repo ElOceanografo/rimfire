@@ -8,6 +8,7 @@ library(lubridate)
 
 load("acoustics.Rdata")
 zoop.ts <- read.csv("nets/zoop_ts.csv")
+fish.ts <- read.csv("fish_TS.csv")
 
 dB.mean <- function(x, na.rm=T) 10 * log10(mean(10^(x/10), na.rm=na.rm))
 
@@ -87,12 +88,20 @@ ts.display.table <- zoop.ts %>%
 write.csv(ts.display.table, "nets/ts.display.table.csv")
 
 
-mean.ts <- zoop.ts %>%
+mean.ts.zoop <- zoop.ts %>%
   filter(freq == 710) %>%
   group_by(trip, Lake) %>%
   summarize(sigma = sum(10^(TS/10) * proportion),
             TS = 10*log10(sigma),
-            weight = sum(weight * proportion))
+            weight = sum(weight * proportion)) %>%
+  mutate(class = "Sv_zoop") %>%
+  as.data.frame()
+
+mean.ts.fish <- fish.ts %>%
+  select(trip, Lake, sigma, TS) %>%
+  mutate(weight = NA, class = "Sv_fish")
+
+mean.ts <- rbind(mean.ts.zoop, mean.ts.fish)
 
 profiles <- echo %>%
   group_by(trip, Lake, Layer_depth_max) %>%
@@ -107,40 +116,43 @@ profiles <- mutate(profiles,
                    biomass = density * weight)
 
 p <- filter(profiles, class=="Sv_zoop", Layer_depth_max <= 25) %>% 
-  ggplot(aes(y=Layer_depth_max, x=biomass*1000, linetype=Lake, shape=Lake)) + 
+  ggplot(aes(y=Layer_depth_max, x=biomass, linetype=Lake, shape=Lake)) + 
   geom_point(size=1) + geom_path() +
   facet_wrap(~trip, nrow=1, scales="free_x") +
   scale_y_reverse(limits=c(25, 0), expand=c(0, 0)) + 
-  ylab("Depth (m)") + xlab(expression(Biomass~(mg~m^-3))) + 
+  ylab("Depth (m)") + xlab(expression(Biomass~(g~m^-3))) + 
   theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
 p
 ggsave("graphics/zoop_profiles.png", p, width=7, height=4, units="in")
 
+profiles.fish <- profiles %>%
+  filter(class=="Sv_fish") %>%
+  mutate(depth = round(Layer_depth_max / 5 ) * 5) %>%
+  group_by(Lake, trip, depth) %>%
+  summarise(density=mean(density))
 
-x_scale <- 1e6
-p <- filter(profiles, class=="Sv_fish") %>% 
-  ggplot(aes(y=Layer_depth_max, x=sv*x_scale, linetype=Lake, shape=Lake)) + 
-  geom_point(size=1) + geom_path() +
+p <- ggplot(profiles.fish, aes(y=depth, x=density*1e3, linetype=Lake, shape=Lake)) + 
+  geom_point() + geom_path() +
   facet_wrap(~trip, nrow=1, scales="free_x") +
   scale_y_reverse(limits=c(60, 0), expand=c(0, 0)) + 
-  ylab("Depth (m)") + xlab(expression(Mean~s[v]~(mm^2~m^-3))) + 
+  ylab("Depth (m)") + xlab(expression(Fish~"/"~1000~m^3)) + 
   theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
 p
-ggsave("graphics/fish_profiles.png", p, width=7, height=3, units="in")
+ggsave("graphics/fish_profiles.png", p, width=7, height=4, units="in")
 
 
 lake_areas = data.frame(
   Lake = c("Tahoe", "Independence", "Cherry", "Eleanor"),
   area = c(490, 2.6, 6.3, 3.9)
 )
-lake_areas <- mutate(lake_areas, area = area * 1000^2)
+lake_areas <- mutate(lake_areas, area = area * 1000^2) # convert areas to m^2
   
 lake.biomass <- profiles %>%
   filter(class=="Sv_zoop", Layer_depth_max < 25) %>%
   group_by(Lake, trip) %>%
   summarise(biomass = sum(biomass)) %>%
   left_join(lake_areas, by="Lake") %>%
-  mutate(total = signif(biomass * area / 1e3, 3)) %>%
+  mutate(total = signif(biomass * area / 1e6, 3)) %>% # convert g to mt
   select(-area)
 
 lake.biomass %>%
@@ -169,9 +181,9 @@ tracks <-  echo %>%
             bottom = max(Layer_depth_max),
             sa = bottom * sv) %>%
   left_join(mean.ts) %>%
-  mutate(density = sa / sigma,
+  mutate(density = sv / sigma,
          biomass = density * weight) %>%
-  select(trip, Lake, Lon_M, Lat_M, Interval, sv, sa, bottom, density, biomass) %>%
+  select(trip, Lake, Lon_M, Lat_M, Interval, sv, sa, bottom, density, biomass)
 
 save(tracks, file="tracks.Rdata")
 

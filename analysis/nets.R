@@ -1,5 +1,6 @@
 library(ggplot2)
 library(dplyr)
+library(tidyr)
 
 load("net_data.Rdata")
 
@@ -10,9 +11,6 @@ counts <- counts %>%
   filter(!((trip == "2014-09") & (Lake=="Tahoe"))) %>%
   mutate(Genus = gsub("Diaptomous", "Leptodiaptomus", Genus))
 
-counts %>%
-  filter(Lake %in% c("Cherry", "Eleanor")) %>%
-  group_by
 
 totals <- counts %>%
   group_by(trip, Lake) %>%
