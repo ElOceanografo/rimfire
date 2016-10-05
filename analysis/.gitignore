@@ -1,6 +1,8 @@
 *.Rdata
 *.Rproj
 *.zip
+*.Rout
+*Rplots.pdf
 NHD_H_1605_Shape/*
 NHD_H_1804_Shape/*
 *~
