@@ -3,8 +3,8 @@ library(scales)
 library(viridis)
 library(reshape2)
 library(dplyr)
-
 library(gstat)
+library(nlme)
 EARTH_RADIUS = 6371
 
 load("tracks.Rdata")
@@ -30,7 +30,7 @@ ggplot() +
   geom_polygon(aes(x=x, y=y, group=Lake), 
                data=filter(lakes, Lake %in% c("Cherry", "Eleanor")),
                fill="light grey") +
-  geom_point(aes(x, y, size=biomass, color=biomass), 
+  geom_point(aes(x, y, color=biomass), 
              data=filter(tracks, Lake %in% c("Cherry", "Eleanor")), alpha=0.2) +
   scale_color_viridis(oob=squish) +
   coord_equal() + xlab("x (m)") + ylab("y (m)") +
@@ -56,11 +56,12 @@ ggplot() +
   coord_equal() + xlab("x (m)") + ylab("y (m)") +
   theme_bw()
 
-ggplot(tracks, aes(x=Interval, y=log(biomass), color=Lake)) + 
-  geom_line() + facet_wrap(~trip)
+ggplot(tracks, aes(x=Interval, y=biomass, color=Lake)) + 
+  geom_path() + facet_wrap(~trip+Lake, scales="free")
+
 
 filter(tracks, Lake=="Cherry", trip=="2013-10") %>%
-  ggplot(aes(x=Interval, y=Sv)) + geom_line()
+  ggplot(aes(x=Interval, y=sv)) + geom_line()
 
 
 tracks <- filter(tracks, biomass < 500, Lake != "Tahoe") %>%
@@ -77,8 +78,8 @@ for (lake in c("Cherry", "Eleanor", "Independence")) {
   inter <- tr$Interval
   for (i in 1:nrow(tr)) {
     xy <- tr[i, c("x", "y")]
-    dx <- xy[1] - lk$x
-    dy <- xy[2] - lk$y
+    dx <- xy[[1]] - lk$x
+    dy <- xy[[2]] - lk$y
     dists[i] <- min(sqrt(dx^2 + dy^2))
   }
   shore.dists[[lake]] <- data.frame(
@@ -89,37 +90,77 @@ for (lake in c("Cherry", "Eleanor", "Independence")) {
 shore.dists <- plyr::ldply(shore.dists, .id=NULL)
 tracks <- left_join(tracks, shore.dists)
 
+ggplot() +
+  geom_polygon(aes(x=x, y=y, group=Lake), 
+               data=filter(lakes, Lake %in% c("Cherry", "Eleanor")),
+               fill="light grey") +
+  geom_point(data=filter(tracks, Lake %in% c("Cherry", "Eleanor")), 
+             aes(x=x, y=y, color=shore.dist)) +
+  scale_color_viridis() + coord_equal()
+
 # modeling biomass
+tracks %>%
+  mutate(shore.round = round(shore.dist, 1), inlet.round=round(inlet.dist)) %>%
+  group_by(Lake, trip, shore.round, inlet.round) %>%
+  summarise(biomass = mean(biomass)) %>%
+  ggplot(aes(x=inlet.round, y=shore.round, fill=log10(biomass))) +
+  geom_tile() + scale_fill_viridis() +
+  facet_grid(Lake ~ trip)
+
 p <- ggplot(tracks, aes(x=inlet.dist, y=biomass)) + 
   geom_point(size=0.5) +
   geom_smooth(method="lm") +
-  scale_y_log10(name=expression(Biomass~(mg~m^-2)), limits=c(0.1, 1001)) +
+  scale_y_log10(name=expression(Biomass~(mg~m^-3))) +
   # annotation_logticks(sides="lr", color = "grey", linewidth=0.5) +
   xlab("Distance to inlet (km)") +
   facet_grid(Lake~trip, scales="free_x") +
   theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
-ggsave("graphics/inlet_distance.png", p)
+ggsave("graphics/inlet_distance.png", p, w=8, h=5, units="in")
 
-ggplot(tracks, aes(x=bottom, y=Sv, color=Lake)) + geom_point() +
-  facet_wrap(~trip) + geom_smooth(method="lm")
+p <- ggplot(tracks, aes(x=shore.dist, y=biomass)) + 
+  geom_point(size=0.5) +
+  geom_smooth(method="lm") +
+  scale_y_log10(name=expression(Biomass~(mg~m^-3))) +
+  # annotation_logticks(sides="lr", color = "grey", linewidth=0.5) +
+  xlab("Distance to shore (km)") +
+  facet_grid(Lake~trip) +
+  theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
+ggsave("graphics/shore_distance.png", p, w=8, h=5, units="in")
 
-mod <- lm(log10(biomass) ~ 0+ trip*Lake*inlet.dist, data=tracks)
+# correlation coefficients
+tracks %>%
+  group_by(Lake, trip) %>%
+  summarize(r = cor(shore.dist, inlet.dist)^2) %>%
+  dcast(Lake ~ trip)
+
+models <- plyr::dlply(tracks, c("Lake", "trip"), function(df) {
+  lm(log10(biomass) ~ inlet.dist + shore.dist, data=df)
+})
+(model.summary <- plyr::ldply(models, function(res) {
+  beta <- coefficients(res)
+  r2 <- summary(res)$adj.r.squared
+  c(beta, R2=r2)
+}))
+
+
+mod <- lm(log10(biomass) ~ 0 + trip*Lake*(inlet.dist+shore.dist), data=tracks)
 summary(mod)
 tracks$resid <- resid(mod)
 
 vg.emp <- plyr::dlply(filter(tracks), c("trip", "Lake"), function (df) {
   span <- sqrt(diff(range(df$x))^2 + diff(range(df$y))^2)
   z <- df$resid / sd(df$resid)
-  variogram(resid ~ 1 + inlet.dist + bottom, locations = ~ x + y, data=na.exclude(df),
+  variogram(resid ~ 1, locations = ~ x + y, data=na.exclude(df),
              cutoff=2, width=0.1) 
   })
 
 vg.emp.df <- plyr::ldply(vg.emp, function(v) data.frame(dist = v$dist, gamma=v$gamma))
 
-p <- ggplot(vg.emp.df, aes(x=dist, y=gamma, shape=Lake, linetype=Lake)) +
-  geom_line() + geom_point() +
+p <- ggplot(vg.emp.df, aes(x=dist, y=gamma, linetype=Lake)) +
+  geom_line() + #geom_point() +
   ylab(expression(gamma)) + xlab("Lag (km)") +
   facet_grid(. ~ trip) +
-  theme_bw()
+  theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
 p
 ggsave("graphics/variograms.png", p, width=10, height=3, units="in")
+
