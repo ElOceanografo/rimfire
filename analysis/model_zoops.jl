@@ -1,4 +1,4 @@
-using DataFrames, DataFramesMeta, SDWBA, Distributions
+using DataFrames, DataFramesMeta, SDWBA, Distributions, FileIO
 
 const sound_speed = 1500.0
 
@@ -6,7 +6,7 @@ srand(697180031068324823)
 
 dB_mean(x) = 10 * log10(mean(10.^(x ./ 10)))
 
-rdata = read_rda("net_data.Rdata", convertdataframes=true)
+rdata = load(File(format"RData", "net_data.Rdata"))
 individuals = rdata["individuals"]
 
 counts = rdata["counts"] 
