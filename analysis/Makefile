@@ -5,7 +5,8 @@ FIGURES = $(addprefix $(GRAPHICS_DIR),\
 		  echo_classification.png dB_difference.png\
 		  zoop_profiles.png fish_profiles.png \
 		  zoop_length_indy_tahoe.png zoop_length_cherry_eleanor.png\
-		  zoop_composition_indy_tahoe.png zoop_composition_cherry_eleanor.png)
+		  zoop_composition_indy_tahoe.png zoop_composition_cherry_eleanor.png\
+		  variograms.png inlet_distance.png)
 
 all : $(FIGURES) 
 	
@@ -37,17 +38,23 @@ graphics/fish_profiles.png: acoustics.R acoustics.Rdata
 	R CMD BATCH acoustics.R /dev/null
 
 graphics/zoop_length_indy_tahoe.png: nets.R net_data.Rdata
-	R CMD BATCH nets.R
+	R CMD BATCH nets.R /dev/null
 
 graphics/zoop_length_cherry_eleanor.png: nets.R net_data.Rdata
-	R CMD BATCH nets.R
+	R CMD BATCH nets.R /dev/null
 
 graphics/zoop_composition_indy_tahoe.png: nets.R net_data.Rdata
-	R CMD BATCH nets.R
+	R CMD BATCH nets.R /dev/null
 
 graphics/zoop_composition_cherry_eleanor.png: nets.R net_data.Rdata
-	R CMD BATCH nets.R
+	R CMD BATCH nets.R /dev/null
 
+graphics/inlet_distance.png: tracks.Rdata lake_outlines.Rdata
+	R CMD BATCH geostats.R
+
+graphics/variograms.png: tracks.Rdata lake_outlines.Rdata
+	R CMD BATCH geostats.R
+	
 nets/zoop_ts.csv: model_zoops.jl net_data.Rdata
 	julia model_zoops.jl
 
