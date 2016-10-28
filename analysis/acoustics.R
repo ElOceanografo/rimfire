@@ -7,6 +7,7 @@ library(tidyr)
 library(lubridate)
 
 load("acoustics.Rdata")
+load("net_data.Rdata")
 zoop.ts <- read.csv("nets/zoop_ts.csv")
 fish.ts <- read.csv("fish_TS.csv")
 
@@ -143,24 +144,25 @@ ggsave("graphics/fish_profiles.png", p, width=7, height=4, units="in")
 
 lake_areas = data.frame(
   Lake = c("Tahoe", "Independence", "Cherry", "Eleanor"),
-  area = c(490, 2.6, 6.3, 3.9)
+  area = c(490, 2.6, 6.3, 3.9) # in km^2
 )
 lake_areas <- mutate(lake_areas, area = area * 1000^2) # convert areas to m^2
   
 lake.biomass <- profiles %>%
   filter(class=="Sv_zoop", Layer_depth_max < 25) %>%
   group_by(Lake, trip) %>%
-  summarise(biomass = sum(biomass)) %>%
+  summarise(biomass = mean(biomass),
+            area.biomass = sum(biomass)) %>%
   left_join(lake_areas, by="Lake") %>%
-  mutate(total = signif(biomass * area / 1e6, 3)) %>% # convert g to mt
+  mutate(total = signif(area.biomass * area / 1e6, 3)) %>% # convert g to mt
   select(-area)
 
 lake.biomass %>%
-  select(-biomass) %>%
+  select(-biomass, -area.biomass) %>%
   spread(trip, total)
 
 lake.biomass %>%
-  select(-total) %>%
+  select(-total, -area.biomass) %>%
   spread(trip, biomass)
 
 ggplot(filter(lake.biomass), aes(x=trip, y=biomass, fill=Lake)) +
@@ -169,6 +171,74 @@ ggplot(filter(lake.biomass), aes(x=trip, y=biomass, fill=Lake)) +
 ggplot(filter(lake.biomass), aes(x=trip, y=total, fill=Lake)) +
   geom_bar(stat="identity", position="dodge")
 
+
+net.totals <- counts %>%
+  filter(! Group %in% c("Rotifers", "Nematode", "Hydroids")) %>%
+  group_by(trip, Lake) %>%
+  summarize(count = sum(Count)) %>%
+  ungroup() %>%
+  left_join(net.meta) %>%
+  mutate(num.density = count / VolFiltered / Dilution,
+         biovolume = Biovolume / VolFiltered / TERCSplitFactor) %>%
+  select(trip, Lake, count, biovolume, num.density)
+
+net.totals <- left_join(net.totals, lake.biomass, by=c("trip", "Lake"))
+
+net.totals.barplot <- net.totals
+net.totals.barplot[is.na(net.totals.barplot)] <- 0
+net.totals.dummy <- net.totals.barplot[grepl("2014", net.totals.barplot$trip), ]
+net.totals.dummy$Lake <- gsub("Cherry", "Tahoe", net.totals.dummy$Lake)
+net.totals.dummy$Lake <- gsub("Eleanor", "Independence", net.totals.dummy$Lake)
+net.totals.dummy$biomass <- 0
+net.totals.dummy$biovolume <- 0
+
+net.totals.barplot <- rbind(net.totals.barplot,
+                            net.totals.dummy)
+
+
+p1 <- ggplot(net.totals.barplot, aes(x=trip, y=biovolume, fill=Lake)) +
+  geom_bar(stat="identity", position="dodge") +
+  xlab("") + ylab(expression(Net~biovolume~(mL~m^-3))) +  ggtitle("a.") +
+  scale_fill_grey() +
+  theme_minimal() + 
+  theme(panel.border = element_rect(fill="#00000000", colour="grey"),
+        plot.title=element_text(hjust=0))
+
+p2 <- ggplot(net.totals.barplot, aes(x=trip, y=biomass, fill=Lake)) + 
+  geom_bar(stat="identity", position="dodge") +
+  scale_fill_grey() +
+  xlab("") + ylab(expression(Acoustic~biomass~(g~m^-3))) + ggtitle("b.") +
+  theme_minimal() + 
+  theme(panel.border = element_rect(fill="#00000000", colour="grey"),
+        plot.title=element_text(hjust=0))
+p <- gridExtra::grid.arrange(p1, p2, ncol=1)
+ggsave("graphics/seasonal_biomass.png", p)
+
+
+# Regression of net and acoustic biomass
+mod.net.acoustic <- lm(biovolume ~ 0 + biomass, net.totals)
+summary(mod.net.acoustic)
+confint(mod.net.acoustic)
+
+mod.net.acoustic.robust <- MASS::rlm(biovolume ~ 0 + biomass, net.totals)
+summary(mod.net.acoustic.robust)
+
+net.totals$label.y <- net.totals$biovolume
+net.totals$label.y[net.totals$Lake == "Independence"] <- net.totals$label.y[net.totals$Lake == "Independence"] + 0.05
+net.totals$label.y[net.totals$Lake == "Tahoe"] <- net.totals$label.y[net.totals$Lake == "Tahoe"] - 0.05
+
+
+png("graphics/net_vs_acoustics.png", width=800, height=750, pointsize = 28)
+mar.default <- par("mar")
+par(mar=c(5, 5, 3, 2))
+plot(biovolume~biomass, net.totals, xlim=c(0, 1.2), ylim=c(0, 3), pch=16, bty='n',
+     xlab=expression(Acoustic~biomass~(g~m^-3)), 
+     ylab=expression(Net~biovolume~(mL~m^-3)))
+text(net.totals$biomass, net.totals$label.y, paste(net.totals$Lake, net.totals$trip), 
+     pos=4, cex=0.8, col="#666666")
+lines(0:1, predict(mod.net.acoustic, newdata=list(biomass=0:1)))
+par(mar=mar.default)
+dev.off()
 
 ################################################################################
 # Track lines

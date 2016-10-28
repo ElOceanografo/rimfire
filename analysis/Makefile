@@ -1,12 +1,21 @@
 GRAPHICS_DIR = graphics/
 FIGURES = $(addprefix $(GRAPHICS_DIR),\
-		  map_california.png map_indy_tahoe.png map_cherry_eleanor.png\
-		  echo_zooplankton.png echo_fish.png \
-		  echo_classification.png dB_difference.png\
-		  zoop_profiles.png fish_profiles.png \
-		  zoop_length_indy_tahoe.png zoop_length_cherry_eleanor.png\
-		  zoop_composition_indy_tahoe.png zoop_composition_cherry_eleanor.png\
-		  variograms.png inlet_distance.png)
+		  map_california.png \
+		  map_indy_tahoe.png \
+		  map_cherry_eleanor.png\
+		  echo_zooplankton.png \
+		  echo_fish.png \
+		  echo_classification.png \
+		  dB_difference.png\
+		  zoop_profiles.png \
+		  fish_profiles.png \
+		  net_vs_acoustics.png \
+		  zoop_length_indy_tahoe.png \
+		  zoop_length_cherry_eleanor.png\
+		  zoop_composition_indy_tahoe.png \
+		  zoop_composition_cherry_eleanor.png\
+		  variograms.png \
+		  inlet_distance.png)
 
 all : $(FIGURES) 
 	
@@ -35,6 +44,9 @@ graphics/zoop_profiles.png: acoustics.R acoustics.Rdata
 	R CMD BATCH acoustics.R /dev/null
 
 graphics/fish_profiles.png: acoustics.R acoustics.Rdata
+	R CMD BATCH acoustics.R /dev/null
+	
+graphics/net_vs_acoustics.png: acoustics.R acoustics.Rdata
 	R CMD BATCH acoustics.R /dev/null
 
 graphics/zoop_length_indy_tahoe.png: nets.R net_data.Rdata
