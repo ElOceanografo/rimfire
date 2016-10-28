@@ -4,10 +4,11 @@ library(reshape2)
 library(stringr)
 
 net.meta <- read.csv("nets/RimFireZooplanktonSampleList.csv") %>%
-  filter(SplitNumber %in% c(0, 2)) %>%
-  select(Year, Month, Day, Lake, MaxDepth, NetType, SplitNumber, VolFiltered, 
-         Biovolume, Dilution=TotalDilutionFactor) %>%
-  mutate(SplitNumber = as.integer(as.character(SplitNumber)))
+  filter(SplitNumber %in% c(0, 2) | Year == 2013) %>%
+  mutate(trip = paste0(Year, "-", str_pad(Month, 2, pad="0")),
+         SplitNumber = as.integer(as.character(SplitNumber))) %>%
+  select(trip, Lake, MaxDepth, NetType, SplitNumber, VolFiltered, 
+         Biovolume, TERCSplitFactor, Dilution=TotalDilutionFactor)
 
 individuals <- read.csv("nets/RimFireZooplanktonMeasurements.csv")
 levels(individuals$Month) <- c(4, 6, 10, 9)
@@ -40,4 +41,16 @@ individuals <- left_join(individuals, taxa,
 counts <- mutate(counts, trip = paste0(Year, "-", str_pad(Month, 2, pad="0")))
 individuals <- mutate(individuals, trip = paste0(Year, "-", str_pad(Month, 2, pad="0")))
 
-save(counts, individuals, taxa, file = "net_data.Rdata")
+
+
+individuals <- individuals %>%
+  filter(!((trip == "2014-09") & (Lake=="Tahoe")),
+         ! (Lake == "Eleanor" & trip == "2014-09" & SplitNumber == 1)) 
+# This sample (Eleanor 2014-09-30) appears to be a mislabeled duplicate
+
+counts <- counts %>%
+  filter(!((trip == "2014-09") & (Lake=="Tahoe")),
+         ! (Lake == "Eleanor" & trip == "2014-09" & SplitNumber == 1)) %>%
+  mutate(Genus = gsub("Diaptomous", "Leptodiaptomus", Genus))
+
+save(counts, individuals, taxa, net.meta, file = "net_data.Rdata")

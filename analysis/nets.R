@@ -4,18 +4,6 @@ library(tidyr)
 
 load("net_data.Rdata")
 
-individuals <- individuals %>%
-  filter(!((trip == "2014-09") & (Lake=="Tahoe")))
-
-counts <- counts %>%
-  filter(!((trip == "2014-09") & (Lake=="Tahoe"))) %>%
-  mutate(Genus = gsub("Diaptomous", "Leptodiaptomus", Genus))
-
-
-totals <- counts %>%
-  group_by(trip, Lake) %>%
-  summarize(total = sum(Count))
-
 summary.counts <- counts %>%
   filter(!Group %in% c("Rotifers", "Nematode", "Hydroids")) %>%
   mutate(Genus = as.character(Genus),
@@ -35,7 +23,7 @@ summary.counts <- summary.counts %>%
 
 
 p <- summary.counts %>%
-  filter(Lake %in% c("Independence", "Tahoe")) %>%
+  filter(Lake %in% c("Independence", "Tahoe"), Percent > 0) %>%
   ggplot(aes(x=Genus, y=Percent, fill=Group)) + 
   geom_bar(stat="identity") + coord_flip() +
   scale_fill_grey(guide = guide_legend(reverse=TRUE)) +
@@ -45,7 +33,9 @@ ggsave("graphics/zoop_composition_indy_tahoe.png", p, w=5, h=3, units="in")
 
 
 p <- summary.counts %>%
-  filter(Lake %in% c("Cherry", "Eleanor"), Group != "Ostracods", Genus != "Diacyclops") %>%
+  filter(Lake %in% c("Cherry", "Eleanor"), 
+         Group != "Ostracods", Genus != "Diacyclops",
+         Percent > 0) %>%
   ggplot(aes(x=Genus, y=Percent, fill=Group)) + 
     geom_bar(stat="identity") + coord_flip() +
     scale_fill_grey(guide = guide_legend(reverse=TRUE)) +
