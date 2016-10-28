@@ -2,6 +2,9 @@ library(reshape2)
 library(dplyr)
 library(lubridate)
 
+CAL.120 <- -0.2
+CAL.710 <- -3.0
+
 # Volume backscatter
 ev.export.dir <- "../acoustics/Exports/"
 files.120 <- list.files(ev.export.dir, "120kHz", full.names = T)
@@ -25,6 +28,8 @@ echo$datetime <- ymd_hms(paste(echo$Date_M, echo$Time_M))
 echo <- group_by(echo, trip, Lake) %>%
   mutate(Interval = plyr::mapvalues(Interval, unique(Interval), 1:length(unique(Interval))),
          Interval = Interval - min(Interval))
+echo$Sv_mean[echo$freq == 120] <- echo$Sv_mean[echo$freq == 120] + CAL.120
+echo$Sv_mean[echo$freq == 710] <- echo$Sv_mean[echo$freq == 710] + CAL.120
 
 save(echo, file="acoustics.Rdata")
 
@@ -41,7 +46,7 @@ target.files$beam[target.files$Lake == "Independence"] <- "Single"
 
 targets <- plyr::ddply(target.files, "filename", function(x) read.csv(as.character(x$filename)))
 targets <- right_join(target.files, targets) %>%
-  select(filename, Lake, Ping_date, Ping_time, Ping_milliseconds, Target_range,
+  select(filename, Lake, freq, Ping_date, Ping_time, Ping_milliseconds, Target_range,
          TS_comp, TS_uncomp, Angle_minor_axis, Angle_major_axis, Transmitted_pulse_length,
          Target_latitude, Target_longitude, Ping_number)
 
@@ -49,5 +54,10 @@ targets$Target_latitude[targets$Target_latitude < -180] <- NA
 targets$Target_longitude[targets$Target_longitude < -180] <- NA
 targets$datetime <- ymd_hms(paste(targets$Ping_date, targets$Ping_time))
 targets$trip <- strftime(targets$datetime, "%Y-%m")
-  
+# apply calibration offsets 
+targets$TS_comp[targets$freq == 120] <- targets$TS_comp[targets$freq == 120] + CAL.120
+targets$TS_uncomp[targets$freq == 120] <- targets$TS_uncomp[targets$freq == 120] + CAL.120
+targets$TS_comp[targets$freq == 710] <- targets$TS_comp[targets$freq == 710] + CAL.710
+targets$TS_uncomp[targets$freq == 710] <- targets$TS_uncomp[targets$freq == 710] + CAL.710
+
 save(targets, file="single_targets.Rdata")
