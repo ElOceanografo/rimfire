@@ -23,10 +23,12 @@ mean.ts.fish <- targets %>%
   group_by(Lake, trip) %>%
   summarise(sigma = mean(10^(TS_comp/10)),
             TS = 10*log10(sigma),
-            length = mean(length))
+            length = mean(length),
+            n = n())
 
 reshape2::dcast(mean.ts.fish, Lake ~ trip, value.var = "TS")
 reshape2::dcast(mean.ts.fish, Lake ~ trip, value.var = "length")
+reshape2::dcast(mean.ts.fish, Lake ~ trip, value.var = "n")
 
 write.csv(mean.ts.fish, file = "fish_TS.csv", row.names = F)
 

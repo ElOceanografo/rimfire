@@ -42,6 +42,7 @@ echo <- mutate(echo,
 echo$class[echo$delta > -10 | echo$Sv_120 > -60] <- "Fish"
 echo$Sv_zoop[echo$class == "Fish"] <- NA
 echo$Sv_fish[echo$class == "Zooplankton" | echo$Sv_fish < -90] <- -Inf
+echo <- filter(echo, Sv_fish < -40) # eliminate a few noise spikes I didn't catch in EV
 
 
 p <- ggplot(echo, aes(x=Interval, y=Layer_depth_max, fill=delta)) +
@@ -149,7 +150,7 @@ lake_areas = data.frame(
 lake_areas <- mutate(lake_areas, area = area * 1000^2) # convert areas to m^2
   
 lake.biomass <- profiles %>%
-  filter(class=="Sv_zoop", Layer_depth_max < 25) %>%
+  filter(class=="Sv_zoop", Layer_depth_max < 30) %>%
   group_by(Lake, trip) %>%
   summarise(biomass = mean(biomass),
             area.biomass = sum(biomass)) %>%
@@ -171,6 +172,23 @@ ggplot(filter(lake.biomass), aes(x=trip, y=biomass, fill=Lake)) +
 ggplot(filter(lake.biomass), aes(x=trip, y=total, fill=Lake)) +
   geom_bar(stat="identity", position="dodge")
 
+lake.density.fish <- profiles %>%
+  filter(class=="Sv_fish") %>%
+  group_by(Lake, trip) %>%
+  summarise(density = mean(density),
+            area.density = sum(density) * 5) %>%
+  left_join(lake_areas, by="Lake") %>%
+  mutate(total = signif(area.density * area, 3)) %>% 
+  select(-area)
+
+lake.density.fish %>%
+  select(-density, -area.density) %>%
+  spread(trip, total)
+
+lake.density.fish %>%
+  mutate(density = density*1000) %>%
+  select(-total, -area.density) %>%
+  spread(trip, density)
 
 net.totals <- counts %>%
   filter(! Group %in% c("Rotifers", "Nematode", "Hydroids")) %>%
@@ -243,17 +261,37 @@ dev.off()
 ################################################################################
 # Track lines
 ################################################################################
-tracks <-  echo %>%
-  filter(Layer_depth_max < 50, class=="Zooplankton") %>%
-  group_by(trip, Lake, Interval, Lat_M, Lon_M) %>%
-  summarise(Sv = dB.mean(Sv_zoop, na.rm=T),
-            sv = 10^(Sv / 10),
-            bottom = max(Layer_depth_max),
-            sa = bottom * sv) %>%
-  left_join(mean.ts) %>%
-  mutate(density = sv / sigma,
-         biomass = density * weight) %>%
-  select(trip, Lake, Lon_M, Lat_M, Interval, sv, sa, bottom, density, biomass)
+# 
+# tracks <-
+#   
+#   echo %>%
+#   filter(Layer_depth_max < 50) %>%
+#   melt(measure.vars=c("Sv_zoop", "Sv_fish"), variable.name="class", value.name="Sv") %>%
+#   group_by(trip, Lake, class, Interval, Lat_M, Lon_M) %>%
+#   summarise(Sv = dB.mean(Sv_zoop, na.rm=T),
+#             sv = 10^(Sv / 10),
+#             bottom = max(Layer_depth_max),
+#             sa = bottom * sv) %>%
+#   left_join(mean.ts) %>%
+#   mutate(density = sv / sigma,
+#          biomass = density * weight) %>%
+#   select(trip, Lake, class, Lon_M, Lat_M, Interval, sv, sa, bottom, density, biomass)
+
+tracks <- echo %>%
+  group_by(trip, Lake, Interval) %>%
+  summarise(Lat_M = mean(Lat_M, na.rm=T),
+            Lon_M = mean(Lon_M, na.rm=T),
+            Sv_zoop = dB.mean(Sv_zoop, na.rm=T),
+            Sv_fish = dB.mean(Sv_fish, na.rm=T),
+            bottom = max(Layer_depth_max)) %>%
+  melt(measure.vars=c("Sv_zoop", "Sv_fish"), variable.name="class", value.name="Sv") %>%
+  mutate(sv = 10^(Sv / 10))
+# tracks$sv[is.na(tracks$sv)] <- 0
+tracks <- left_join(tracks, mean.ts)
+tracks <- mutate(tracks, 
+                 density = sv / sigma, 
+                 biomass = density * weight)
+tracks <- filter(tracks, is.finite(Lon_M), is.finite(Lat_M))
 
 save(tracks, file="tracks.Rdata")
 
