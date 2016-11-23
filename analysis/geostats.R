@@ -171,8 +171,9 @@ p <- filter(tracks, class=="Sv_fish") %>%
 tracks %>%
   filter(!is.na(shore.dist), !is.na(inlet.dist)) %>%
   group_by(Lake, trip) %>%
-  summarize(r = cor(shore.dist, inlet.dist)^2) %>%
+  summarize(r = cor(shore.dist, inlet.dist)) %>%
   dcast(Lake ~ trip)
+ggplot(tracks, aes(x=inlet.dist, y=shore.dist)) + geom_point() + facet_grid(Lake ~ trip)
 
 ######################
 # Modeling zooplankton
@@ -183,9 +184,9 @@ tracks.fish <- filter(tracks, class=="Sv_fish", Lake != "Independence")
 filter(tracks.zoop, Lake=="Cherry", trip=="2013-10") %>%
 ggplot(aes(x=Interval, y=biomass)) + 
   geom_point() + geom_line()
-
-i <- which(tracks.zoop$Lake=="Cherry" & tracks.zoop$trip=="2013-10" & tracks.zoop$Interval==90)
-tracks.zoop$biomass[i] <- tracks.zoop$biomass[i-1]
+# 
+# i <- which(tracks.zoop$Lake=="Cherry" & tracks.zoop$trip=="2013-10" & tracks.zoop$Interval==90)
+# tracks.zoop$biomass[i] <- tracks.zoop$biomass[i-1]
 
 
 models <- plyr::dlply(tracks.zoop, c("Lake", "trip"), function(df) {
@@ -234,28 +235,3 @@ p <- ggplot(vg.emp.df.zoop, aes(x=dist, y=gamma, linetype=Lake)) +
   theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
 p
 ggsave("graphics/variograms.png", p, width=10, height=3, units="in")
-
-###############
-# Modeling fish
-###############
-
-filter(tracks.fish, Lake=="Cherry", trip=="2013-10") %>%
-ggplot(aes(x=y, y=density, color=Interval)) + 
-  geom_path() + geom_point() +
-  facet_grid(Lake ~ trip) + scale_y_log10()
-
-vg.emp.fish <- plyr::dlply(tracks.fish, c("trip", "Lake"), function (df) {
-  span <- sqrt(diff(range(df$x))^2 + diff(range(df$y))^2)
-  variogram(sqrt(density) ~ 1, locations = ~ x + y, data=df,
-             cutoff=2, width=0.1) 
-  })
-
-vg.emp.df.fish <- plyr::ldply(vg.emp.fish, function(v) data.frame(dist = v$dist, gamma=v$gamma))
-
-p <- filter(vg.emp.df.fish, ! (Lake == "Cherry" & trip == "2013-10")) %>%
-  ggplot(aes(x=dist, y=gamma, linetype=Lake)) +
-  geom_line() + #geom_point() +
-  ylab(expression(gamma)) + xlab("Lag (km)") +
-  facet_grid(. ~ trip) +
-  theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
-p
