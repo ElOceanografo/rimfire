@@ -9,6 +9,8 @@ CAL.710 <- -3.0
 ev.export.dir <- "../acoustics/Exports/"
 files.120 <- list.files(ev.export.dir, "120kHz", full.names = T)
 files.710 <- list.files(ev.export.dir, "710kHz", full.names = T)
+files.120 <- files.120[! grepl("echogram_figure", files.120)]
+files.710 <- files.710[! grepl("echogram_figure", files.710)]
 
 files <- data.frame(filename = c(files.120, files.710),
                     freq = c(rep(c('120', '710'), c(9, 10))))
