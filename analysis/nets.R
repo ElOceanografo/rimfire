@@ -4,6 +4,10 @@ library(tidyr)
 
 load("net_data.Rdata")
 
+totals <- counts %>%
+  group_by(trip, Lake) %>%
+  summarize(total = sum(Count))
+
 summary.counts <- counts %>%
   filter(!Group %in% c("Rotifers", "Nematode", "Hydroids")) %>%
   mutate(Genus = as.character(Genus),
