@@ -1,8 +1,8 @@
 ,,,,,,,Group,Copepods,Copepods,Copepods,Copepods,Copepods,Hydroids,Copepods,Copepods,Copepods,Copepods,Copepods,Cladocerans,Nematode,Cladocerans,Cladocerans,Cladocerans,Cladocerans,Cladocerans,Cladocerans,Cladocerans,Cladocerans,Cladocerans,Cladocerans,Cladocerans,Ostracods,Rotifers
-,,,,,,,Order,Calanoida,Calanoida,Calanoida,NA,Calanoida,NA,Calanoida,Cyclopoid,Cyclopoid,Cyclopoid,Cyclopoid,Cladocera,NA,Cladocera,Cladocera,Cladocera,Cladocera,Sididae,Ctenopoda,Ctenopoda,Ctenopoda,Ctenopoda,Bosmina,Bosmina,Ostracoda,NA
-,,,,,,,Genus,Epischura,Epischura,Diaptomous,NA,NA,NA,Eurytamora,Euryclops,NA,Orthocyclops,Diacyclops,Daphnia,NA,Daphnia,Daphnia,Daphnia,Daphnia,NA,Diplostraca,Diplostraca,Diplostraca,Diplostraca,Bosmina,Bosmina,NA,NA
-,,,,,,,Species,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,thomasi,Pulicaria,NA,pulex,middendorffiana,NA,NA,NA,Pseudorida,Diaphonsoma,Holopedium,Unidentified,NA,longirostris,NA,NA
-,,,,,,,LifeStage,Adult,Copepodite,Adult,Nauplius,Adult,NA,Adult,Adult,Adult,Adult,Adult,Adult,NA,Adult,Adult,Adult,Nauplius,Adult,bindentata,birgei,gibberum,NA,Adult,Adult,Adult,Adult
+,,,,,,,Order,Calanoida,Calanoida,Calanoida,NA,Calanoida,NA,Calanoida,Cyclopoid,Cyclopoid,Cyclopoid,Cyclopoid,Cladocera,NA,Cladocera,Cladocera,Cladocera,Cladocera,Sididae,Diplostraca,Diplostraca,Diplostraca,Ctenopoda,Bosmina,Bosmina,Ostracoda,NA
+,,,,,,,Genus,Epischura,Epischura,Diaptomous,NA,NA,NA,Eurytamora,Euryclops,NA,Orthocyclops,Diacyclops,Daphnia,NA,Daphnia,Daphnia,Daphnia,Daphnia,NA,Pseudorida,Diaphonsoma,Holopedium,Diplostraca,Bosmina,Bosmina,NA,NA
+,,,,,,,Species,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,thomasi,Pulicaria,NA,pulex,middendorffiana,NA,NA,NA,bindentata,birgei,gibberum,Unidentified,NA,longirostris,NA,NA
+,,,,,,,LifeStage,Adult,Copepodite,Adult,Nauplius,Adult,Adult,Adult,Adult,Adult,Adult,Adult,Adult,Adult,Adult,Adult,Adult,Nauplius,Adult,Adult,Adult,Adult,Adult,Adult,Adult,Adult,Adult
 Year,Month,Day,Lake,SplitNumber,Counter,QC,Comments,,,,,,,,,,,,,,,,,,,,,,,,,,
 2014,9,30,Tahoe,TS1-1,SSU,,Training set 1,,,,,,,,,,,,,,,,,,,,,,,,,,
 2014,9,30,Tahoe,TS2-2,MDA,SSU,Training set 2,28,,28,52,1,,3,7,,,,1,1,,,,,,,,,,,,,

@@ -24,5 +24,5 @@ Year,Month,Day,Lake,MaxDepth,NetType,NetDiam,NetMesh,VolFiltered,SplitAtTERC,TER
 2014,9,30,Tahoe,60,Ring,0.75,80,45,No,1,Yes,42,5,3,TS2-2,95,87,0.0654135338,MDA,,,,,
 2014,9,30,Tahoe,60,Ring,0.75,80,45,No,1,Yes,39,5,3.8,TS3-2,95,88,0.0902564103,NA,,,,,
 2014,9,30,Tahoe,60,Ring,0.75,80,45,No,1,Yes,35.2,5,3.2,TS4-2,90,81,0.0818181818,NA,,,,,
-2013,10,21,Tahoe,50,Ring,0.75,80,37.5,No,1,Yes,18.5,0.5,12,1,NA,NA,0.6486486486,SSU,,,,,
-2013,10,20,Independence,40,Ring,0.75,80,30,No,1,Yes,26,2.5,2,1,NA,NA,0.0769230769,SSU,,,,,
+2013,10,21,Tahoe,50,Ring,0.2,80,37.5,No,1,Yes,18.5,0.5,12,1,NA,NA,0.6486486486,SSU,,,,,
+2013,10,20,Independence,40,Ring,0.2,80,30,No,1,Yes,26,2.5,2,1,NA,NA,0.0769230769,SSU,,,,,
