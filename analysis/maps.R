@@ -17,7 +17,7 @@ lake_centers <- lakes %>%
   summarise(long = mean(Longitude),
             lat = mean(Latitude))
 
-p <- ggplot() +
+p.cal <- ggplot() +
   geom_polygon(aes(x=long, y=lat, group=group), data=countries, fill="#eeeeee") + 
   geom_path(aes(x=long, y=lat, group=group), data=states, color="dark grey") + 
   geom_path(aes(x=long, y=lat, group=group), data=countries) + 
@@ -25,9 +25,9 @@ p <- ggplot() +
   geom_point(aes(x=long, y=lat), data=lake_centers) +
   geom_text_repel(aes(x=long, y=lat, label=Lake), data=lake_centers, nudge_x=3) +
   coord_map("sinusoidal", xlim=c(-125, -113), ylim=c(31, 43)) + theme_bw() +
+  ggtitle("(a)") + theme(plot.title=element_text(hjust=0)) +
   xlab("Longitude") + ylab("Latitude") 
 
-ggsave("graphics/map_california.png", p, width=4, height=4, units="in")
 
 # Independence and Tahoe
 # Independence
@@ -45,7 +45,7 @@ p.ind <- ggplot() +
             data=filter(tracks, Lake=="Independence")) +
   geom_line(aes(x, y), scale.bar, lwd=1.5) + 
   annotate("text", x = x0 + km.longitude / 2, y = y0 + 0.002, label = "1 km") +
-  ggtitle("a.") +
+  ggtitle("(b)") +
   coord_map() + theme_bw() + theme(plot.title=element_text(hjust=0))
 
 # Tahoe
@@ -62,12 +62,8 @@ p.tahoe <- ggplot() +
             data=filter(tracks, Lake=="Tahoe", Lat_M > 39)) +
   geom_line(aes(x, y), scale.bar, lwd=1.5) + 
   annotate("text", x = x0 + 5*km.longitude / 2, y = y0 + 0.01, label = "5 km") +
-  ggtitle("b.") +
+  ggtitle("(c)") +
   coord_map() + theme_bw() + theme(plot.title=element_text(hjust=0))
-
-png("graphics/map_indy_tahoe.png", width = 4, height=8, units="in", res=150)
-grid.arrange(p.ind, p.tahoe, ncol=1, heights=c(1, 2.1))
-dev.off()
 
 # Cherry and Eleanor
 lakes_ce <- filter(lakes, Lake %in% c("Cherry", "Eleanor"))
@@ -88,8 +84,13 @@ p.cherry.eleanor <- ggplot() +
   geom_line(aes(x, y), scale.bar, lwd=1.5) + 
   annotate("text", x = x0 + km.longitude / 2, y = y0 + 0.003, label = "1 km") +
   facet_wrap(~trip) + theme_minimal() + 
-  theme(panel.border = element_rect(fill=NA)) +
+  ggtitle("(d)") + theme(panel.border = element_rect(fill=NA), plot.title=element_text(hjust=0)) +
   coord_map()
 
-ggsave("graphics/map_cherry_eleanor.png", p.cherry.eleanor, width=7, height=7, units="in")
+lay <- matrix(c(1, 2, 3, 
+                4, 4, 4,
+                4, 4, 4), byrow=T, nrow=3)
+p.map <- grid.arrange(grobs=list(p.cal, p.ind, p.tahoe, p.cherry.eleanor), layout_matrix=lay)
+ggsave("graphics/maps.png", p.map, width=8, height=11, units="in")
+
 
