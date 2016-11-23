@@ -1,31 +1,24 @@
 GRAPHICS_DIR = graphics/
 FIGURES = $(addprefix $(GRAPHICS_DIR),\
-		  map_california.png \
-		  map_indy_tahoe.png \
-		  map_cherry_eleanor.png\
+		  maps.png \
+		  example_echograms.png \
 		  echo_zooplankton.png \
 		  echo_fish.png \
 		  echo_classification.png \
 		  dB_difference.png\
-		  zoop_profiles.png \
-		  fish_profiles.png \
+		  profiles.png \
 		  net_vs_acoustics.png \
 		  zoop_length_indy_tahoe.png \
 		  zoop_length_cherry_eleanor.png\
 		  zoop_composition_indy_tahoe.png \
 		  zoop_composition_cherry_eleanor.png\
+		  seasonal_biomass.png \
 		  variograms.png \
 		  inlet_distance.png)
 
 all : $(FIGURES) 
 	
-graphics/map_california.png: maps.R tracks.Rdata lake_outlines.Rdata
-	R CMD BATCH maps.R /dev/null
-
-graphics/map_indy_tahoe.png: maps.R tracks.Rdata lake_outlines.Rdata
-	R CMD BATCH maps.R /dev/null
-
-graphics/map_cherry_eleanor.png: maps.R tracks.Rdata lake_outlines.Rdata
+graphics/maps.png: maps.R tracks.Rdata lake_outlines.Rdata
 	R CMD BATCH maps.R /dev/null
 
 graphics/echo_zooplankton.png: acoustics.R acoustics.Rdata
@@ -40,10 +33,13 @@ graphics/echo_classification.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv
 graphics/dB_difference.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv
 	R CMD BATCH acoustics.R /dev/null
 
-graphics/zoop_profiles.png: acoustics.R acoustics.Rdata
+graphics/example_echograms.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv fish_TS.csv
 	R CMD BATCH acoustics.R /dev/null
-
-graphics/fish_profiles.png: acoustics.R acoustics.Rdata
+	
+graphics/profiles.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv fish_TS.csv
+	R CMD BATCH acoustics.R /dev/null
+	
+graphics/seasonal_biomass.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv fish_TS.csv
 	R CMD BATCH acoustics.R /dev/null
 	
 graphics/net_vs_acoustics.png: acoustics.R acoustics.Rdata
