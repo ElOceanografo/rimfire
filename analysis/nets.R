@@ -32,8 +32,8 @@ p <- summary.counts %>%
   geom_bar(stat="identity") + coord_flip() +
   scale_fill_grey(guide = guide_legend(reverse=TRUE)) +
   facet_wrap(~Lake) + 
-  theme_minimal()
-ggsave("graphics/zoop_composition_indy_tahoe.png", p, w=5, h=3, units="in")
+  theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
+ggsave("graphics/zoop_composition_indy_tahoe.png", p, w=6, h=3, units="in")
 
 
 p <- summary.counts %>%
@@ -42,9 +42,9 @@ p <- summary.counts %>%
          Percent > 0) %>%
   ggplot(aes(x=Genus, y=Percent, fill=Group)) + 
     geom_bar(stat="identity") + coord_flip() +
-    scale_fill_grey(guide = guide_legend(reverse=TRUE)) +
+    scale_fill_grey(guide = guide_legend(reverse=F)) +
     facet_grid(Lake ~ trip) + 
-    theme_minimal()
+    theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
 ggsave("graphics/zoop_composition_cherry_eleanor.png", p, w=7.5, h=4.5, units="in")
 
 summary.cherry.eleanor <- counts %>%
@@ -77,7 +77,7 @@ p.indy.tahoe <- individuals %>%
   ggplot(aes(x=Group, y=Length)) +
   geom_boxplot() + 
   facet_wrap(~Lake) + 
-  theme_bw()
+  theme_bw() 
 
 ggsave("graphics/zoop_length_indy_tahoe.png", p.indy.tahoe, 
        width=6, height=3, units="in")

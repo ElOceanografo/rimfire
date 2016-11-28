@@ -115,7 +115,7 @@ p1 <-  ggplot() +
   scale_color_gradientn(colors=echo.col, limits=c(-80, -50), oob=squish, guide=F) +
   scale_x_datetime(expand=c(0, 0), name="Time") +
   scale_y_reverse(limits=c(20, 1.5), expand=c(0, 0), name="Depth (m)") + 
-  ggtitle("A.") + theme_bw() + 
+  ggtitle("a") + theme_bw() + 
   theme(plot.title=element_text(hjust=0),
       panel.background=element_rect(fill="grey50"),
       panel.grid.major = element_blank(), panel.grid.minor = element_blank())
@@ -126,8 +126,8 @@ p2 <- filter(echogram, freq==710) %>%
   geom_tile() +
   scale_x_datetime(expand=c(0, 0), name="Time") +
   scale_y_reverse(limits=c(20, 1.5), expand=c(0, 0), name="Depth (m)") + 
-  scale_fill_gradientn(colors=echo.col, limits=c(-80, -50), oob=squish, name=expression(S[v~120])) +
-  ggtitle("B.") + theme_bw() + 
+  scale_fill_gradientn(colors=echo.col, limits=c(-80, -50), oob=squish, name=expression(S[v~710])) +
+  ggtitle("b") + theme_bw() + 
   theme(plot.title=element_text(hjust=0),
         panel.background=element_rect(fill="grey50"),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())
@@ -140,7 +140,7 @@ p3 <-  ggplot() +
              color="red", shape=15, size=0.7) +
   scale_x_datetime(expand=c(0, 0), name="Time") +
   scale_y_reverse(limits=c(20, 1.5), expand=c(0, 0), name="Depth (m)") +
-  ggtitle("C.") + theme_bw() +
+  ggtitle("c") + theme_bw() +
   theme(plot.title=element_text(hjust=0),
         panel.background=element_rect(fill="grey50"),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())
@@ -290,7 +290,7 @@ net.totals.barplot$biovolume[ii] <- net.totals.barplot$biovolume[ii] + 0.02
 
 p1 <- ggplot(net.totals.barplot, aes(x=trip, y=biovolume, fill=Lake)) +
   geom_bar(stat="identity", position="dodge") +
-  xlab("") + ylab(expression(Net~biovolume~(mL~m^-3))) +  ggtitle("a.") +
+  xlab("") + ylab(expression(Net~biovolume~(mL~m^-3))) +  ggtitle("a") +
   scale_fill_grey(start=0.8, end=0) +
   theme_minimal() + 
   theme(panel.border = element_rect(fill="#00000000", colour="grey"),
@@ -299,7 +299,7 @@ p1 <- ggplot(net.totals.barplot, aes(x=trip, y=biovolume, fill=Lake)) +
 p2 <- ggplot(net.totals.barplot, aes(x=trip, y=biomass, fill=Lake)) + 
   geom_bar(stat="identity", position="dodge") +
   scale_fill_grey(start=0.8, end=0) +
-  xlab("") + ylab(expression(Acoustic~biomass~(g~m^-3))) + ggtitle("b.") +
+  xlab("") + ylab(expression(Acoustic~biomass~(g~m^-3))) + ggtitle("b") +
   theme_minimal() + 
   theme(panel.border = element_rect(fill="#00000000", colour="grey"),
         plot.title=element_text(hjust=0))
@@ -373,9 +373,9 @@ net.echo$label.x[4] <- net.echo$label.x[4] - 0.5
 net.echo$label.y[2] <- net.echo$label.y[2] - 0.13
 net.echo$label.x[2] <- net.echo$label.x[2] - 0.5
 net.echo$label.y[1] <- net.echo$label.y[1] - 0.03
-net.echo$label.x[6] <- net.echo$label.x[6] - 6
+net.echo$label.x[6] <- net.echo$label.x[6] - 5
 
-png("graphics/net_vs_acoustics.png", width=900, height=600, pointsize = 24)
+png("graphics/net_vs_acoustics.png", width=1000, height=700, pointsize = 24)
 mar.default <- par("mar")
 par(mar=c(5, 5, 3, 2))
 plot(biovolume_gc ~ biomass_acoustic, net.echo.sub, xlim=c(0, 20), ylim=c(-0.1, 2.5),

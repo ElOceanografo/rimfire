@@ -197,11 +197,17 @@ models <- plyr::dlply(tracks.zoop, c("Lake", "trip"), function(df) {
   beta <- signif(res$coefficients, 3)
   s <- summary(res)
   r2 <- round(s$adj.r.squared, 2)
-  p.intercept <- signif(s$coefficients[1, 4], 3)
-  p.inlet <- signif(s$coefficients[2, 4], 3)
-  p.shore <- signif(s$coefficients[3, 4], 3)
+  p.intercept <- round(s$coefficients[1, 4], 3)
+  p.inlet <- round(s$coefficients[2, 4], 3)
+  p.shore <- round(s$coefficients[3, 4], 3)
   c(beta, R2=r2, p.intercept=p.intercept, p.inlet=p.inlet, p.shore=p.shore)
 }))
+model.summary$p.intercept[model.summary$p.intercept < 0.001] <- "< 0.001"
+model.summary$p.shore[model.summary$p.shore < 0.001] <- "< 0.001"
+model.summary$p.inlet[model.summary$p.inlet < 0.001] <- "< 0.001"
+model.summary <- model.summary %>%
+  arrange(trip, Lake) %>%
+  select(trip, Lake, `(Intercept)`, p.intercept, inlet.dist, p.inlet, shore.dist, p.shore, R2)
 write.csv(model.summary, "spatial_model_summary.csv")
 
 tracks.zoop$pred <- 0

@@ -89,11 +89,10 @@ zoop_ts = by(individuals, [:trip, :Lake, :model]) do df
 		weight = [mean(df[:weight]), mean(df[:weight])])
 end
 
+totals = @by(counts, [:trip, :Lake], total = sum(:Count))
 proportions = @linq counts |>
     groupby([:trip, :Lake, :model]) |>
-    based_on(n = sum(:Count))
-totals = @by(counts, [:trip, :Lake], total = sum(:Count))
-proportions = @linq proportions |>
+    based_on(n = sum(:Count)) |>
 	join(totals, on=[:trip, :Lake], kind=:left) |>
 	transform(proportion = :n ./ :total)
 

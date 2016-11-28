@@ -24,8 +24,9 @@ p.cal <- ggplot() +
   geom_polygon(aes(x=Longitude, y=Latitude, group=Lake), data=lakes) +
   geom_point(aes(x=long, y=lat), data=lake_centers) +
   geom_text_repel(aes(x=long, y=lat, label=Lake), data=lake_centers, nudge_x=3) +
-  coord_map("sinusoidal", xlim=c(-125, -113), ylim=c(31, 43)) + theme_bw() +
-  ggtitle("(a)") + theme(plot.title=element_text(hjust=0)) +
+  coord_map("sinusoidal", xlim=c(-125, -113), ylim=c(30, 44)) + theme_bw() +
+  ggtitle("a") + theme(plot.title=element_text(hjust=0)) +
+  scale_x_continuous(breaks=c(-125, -120, -115)) +
   xlab("Longitude") + ylab("Latitude") 
 
 
@@ -44,9 +45,11 @@ p.ind <- ggplot() +
   geom_path(aes(x=Lon_M, y=Lat_M, group=Lake), 
             data=filter(tracks, Lake=="Independence")) +
   geom_line(aes(x, y), scale.bar, lwd=1.5) + 
-  annotate("text", x = x0 + km.longitude / 2, y = y0 + 0.002, label = "1 km") +
-  ggtitle("(b)") +
-  coord_map() + theme_bw() + theme(plot.title=element_text(hjust=0))
+  annotate("text", x = x0 + km.longitude / 2, y = y0 + 0.003, label = "1 km") +
+  ggtitle("b") +
+  scale_x_continuous(breaks=c(-120.33, -120.31, -120.29)) +
+  coord_map(ylim=c(39.41, 39.47), xlim=c(-120.33, -120.28)) + 
+  theme_bw() + theme(plot.title=element_text(hjust=0))
 
 # Tahoe
 x0 <- -120.16
@@ -61,8 +64,8 @@ p.tahoe <- ggplot() +
   geom_line(aes(x=Lon_M, y=Lat_M, group=Lake), 
             data=filter(tracks, Lake=="Tahoe", Lat_M > 39)) +
   geom_line(aes(x, y), scale.bar, lwd=1.5) + 
-  annotate("text", x = x0 + 5*km.longitude / 2, y = y0 + 0.01, label = "5 km") +
-  ggtitle("(c)") +
+  annotate("text", x = x0 + 5*km.longitude / 2, y = y0 + 0.02, label = "5 km") +
+  ggtitle("c") +
   coord_map() + theme_bw() + theme(plot.title=element_text(hjust=0))
 
 # Cherry and Eleanor
@@ -76,21 +79,28 @@ scale.bar <- data.frame(
   y = c(y0, y0)
 )
 
+lake.labels <- data.frame(
+  x = c(-119.885, -119.85),
+  y = c(38.01, 38.0),
+  label = c("Cherry", "Eleanor")
+)
+
 p.cherry.eleanor <- ggplot() +
   geom_polygon(aes(x=Longitude, y=Latitude, group=Lake), fill="light grey",
                data=lakes_ce) +
+  geom_text(aes(x=x, y=y, label=label), lake.labels, col="#555555") +
   geom_path(aes(x=Lon_M, y=Lat_M, group=Lake), 
             data=track_ce) +
   geom_line(aes(x, y), scale.bar, lwd=1.5) + 
   annotate("text", x = x0 + km.longitude / 2, y = y0 + 0.003, label = "1 km") +
   facet_wrap(~trip) + theme_minimal() + 
-  ggtitle("(d)") + theme(panel.border = element_rect(fill=NA), plot.title=element_text(hjust=0)) +
+  ggtitle("d") + theme(panel.border = element_rect(fill=NA), plot.title=element_text(hjust=0)) +
   coord_map()
 
 lay <- matrix(c(1, 2, 3, 
                 4, 4, 4,
                 4, 4, 4), byrow=T, nrow=3)
 p.map <- grid.arrange(grobs=list(p.cal, p.ind, p.tahoe, p.cherry.eleanor), layout_matrix=lay)
-ggsave("graphics/maps.png", p.map, width=8, height=11, units="in")
+ggsave("graphics/maps.png", p.map, width=7, height=10, units="in")
 
 
