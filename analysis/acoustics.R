@@ -152,16 +152,7 @@ dev.off()
 ################################################################################
 # Depth profiles
 ################################################################################
- 
-ts.display.table <- zoop.ts %>%
-  filter(freq == 710) %>%
-  mutate(percent = round(proportion*100),
-         weight = round(weight * 1e6, 1),
-         TS = round(TS, 1)) %>%
-  select(-freq, -total, -proportion) %>%
-  melt(measure.vars = c("TS", "weight", "n", "percent")) %>%
-  dcast(trip + Lake ~ model + variable)
-write.csv(ts.display.table, "nets/ts.display.table.csv")
+
 
 mean.ts.zoop <- zoop.ts %>%
   filter(freq == 710) %>%
@@ -172,6 +163,19 @@ mean.ts.zoop <- zoop.ts %>%
             volume = sum(volume * proportion)) %>%
   mutate(class = "Sv_zoop") %>%
   as.data.frame()
+ 
+ts.display.table <- zoop.ts %>%
+  filter(freq == 710) %>%
+  mutate(percent = round(proportion*100),
+         weight = round(weight * 1e6, 1),
+         TS = round(TS, 1)) %>%
+  select(-freq, -total, -proportion) %>%
+  melt(measure.vars = c("TS", "weight", "n", "percent")) %>%
+  dcast(trip + Lake ~ model + variable) %>%
+  left_join(select(mean.ts.zoop, trip, Lake, TS, weight)) %>%
+  mutate(TS = round(TS, 1),
+         weight = round(weight * 1e6, 1))
+write.csv(ts.display.table, "nets/ts.display.table.csv")
 
 mean.ts.fish <- fish.ts %>%
   select(trip, Lake, sigma, TS, weight) %>%

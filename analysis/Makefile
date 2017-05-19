@@ -66,7 +66,13 @@ graphics/variograms.png: tracks.Rdata lake_outlines.Rdata
 nets/zoop_ts.csv: model_zoops.jl net_data.Rdata
 	julia model_zoops.jl
 
+fish_TS.csv: single_targets.R single_targets.Rdata
+	R CMD BATCH single_targets.R /dev/null
+
 acoustics.Rdata: load_acoustics.R ../acoustics/Exports/*
+	R CMD BATCH load_acoustics.R /dev/null
+	
+single_targets.Rdata: load_acoustics.R ../acoustics/Exports/*
 	R CMD BATCH load_acoustics.R /dev/null
 
 net_data.Rdata: load_net_data.R nets/RimFireZooplanktonMeasurements.csv nets/RimFireZooplanktonCounts.csv
@@ -75,14 +81,14 @@ net_data.Rdata: load_net_data.R nets/RimFireZooplanktonMeasurements.csv nets/Rim
 lake_outlines.Rdata: load_mapdata.R NHD_H_1804_Shape NHD_H_1605_Shape
 	R CMD BATCH load_mapdata.R /dev/null
 
-NHD_H_1804_Shape :  | NHD_H_1804_Shape.zip 
+NHD_H_1804_Shape:  | NHD_H_1804_Shape.zip 
 	mkdir NHD_H_1804_Shape
 	unzip NHD_H_1804_Shape.zip -d NHD_H_1804_Shape
 
 NHD_H_1804_Shape.zip:
 	wget https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/NHD/HU4/HighResolution/Shape/NHD_H_1804_Shape.zip
 
-NHD_H_1605_Shape :  | NHD_H_1605_Shape.zip 
+NHD_H_1605_Shape:  | NHD_H_1605_Shape.zip 
 	mkdir NHD_H_1605_Shape
 	unzip NHD_H_1605_Shape.zip -d NHD_H_1605_Shape
 

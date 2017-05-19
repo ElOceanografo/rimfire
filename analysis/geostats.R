@@ -240,4 +240,4 @@ p <- ggplot(vg.emp.df.zoop, aes(x=dist, y=gamma, linetype=Lake)) +
   facet_grid(. ~ trip) +
   theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
 p
-ggsave("graphics/variograms.png", p, width=10, height=3, units="in")
+ggsave("graphics/variograms.png", p, width=7, height=2, units="in")

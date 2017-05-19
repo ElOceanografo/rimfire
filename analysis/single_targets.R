@@ -11,7 +11,7 @@ b <- mean(c(2.98, 2.99, 3.103))
 targets <- filter(targets, TS_uncomp > -60, TS_comp < -30, Target_range < 100)
 targets <- mutate(targets, 
                   # Foote 1987, from Simmonds and MacLennan (in cm)
-                  length = 10^((TS_uncomp + 67.4) / 20),
+                  length = 10^((TS_comp + 67.4) / 20),
                   # convert length to mm for W-L equations
                   weight = 10^(a + b * log10(length * 10)))
 
