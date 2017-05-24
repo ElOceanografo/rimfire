@@ -25,6 +25,22 @@ genus.levels <- unique(arrange(summary.counts, desc(Group), desc(Genus))$Genus)
 summary.counts <- summary.counts %>%
   mutate(Genus = factor(Genus, levels=genus.levels))
 
+summary.counts %>%
+  filter(Lake %in% c("Independence", "Tahoe"), 
+         Group != "Ostracods", Genus != "Diacyclops") %>%
+  mutate(Percent = round(Percent, 1),
+         Genus = factor(Genus, levels=rev(genus.levels))) %>%
+  reshape2::dcast(Lake + Group + Genus ~ trip, value.var="Percent") %>%
+  write.csv("nets/zoop_composition_indy_tahoe.csv", row.names=F)
+
+summary.counts %>%
+  filter(Lake %in% c("Cherry", "Eleanor"), 
+         Group != "Ostracods", Genus != "Diacyclops") %>%
+  mutate(Percent = round(Percent, 1),
+         Genus = factor(Genus, levels=rev(genus.levels))) %>%
+  reshape2::dcast(Lake + Group + Genus ~ trip, value.var="Percent") %>%
+  write.csv("nets/zoop_composition_cherry_eleanor.csv", row.names=F)
+
 
 p <- summary.counts %>%
   filter(Lake %in% c("Independence", "Tahoe"), Percent > 0) %>%
