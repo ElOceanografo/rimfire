@@ -75,6 +75,7 @@ ggsave("graphics/echo_fish.png", p, width=12.5, height=7.61, units="in")
 
 
 # Example echogram plot
+
 echogram.120 <- read.csv("../acoustics/Exports/cherry.2014.06.24.120kHz.echogram_figure.csv") %>%
   mutate(freq = 120) %>%
   mutate(datetime = ymd_hms(paste(Date_M, Time_M), tz="UTC")) %>%
@@ -84,6 +85,9 @@ echogram.710 <- read.csv("../acoustics/Exports/cherry.2014.06.24.710kHz.echogram
   mutate(freq = 710) %>%
   mutate(datetime = ymd_hms(paste(Date_M, Time_M), tz="UTC")) %>%
   filter(Interval > 3700)
+
+save(echogram.120, echogram.710, file="example_echogram_data.Rdata")
+
 
 
 with(echogram.120,
