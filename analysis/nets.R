@@ -4,12 +4,13 @@ library(tidyr)
 
 load("net_data.Rdata")
 
+counts <- filter(counts, !Group %in% c("Rotifers", "Nematode", "Hydroids"))
+
 totals <- counts %>%
   group_by(trip, Lake) %>%
   summarize(total = sum(Count))
 
 summary.counts <- counts %>%
-  filter(!Group %in% c("Rotifers", "Nematode", "Hydroids")) %>%
   mutate(Genus = as.character(Genus),
          Group = as.character(Group)) %>%
   group_by(trip, Lake, Group, Genus) %>%
@@ -27,7 +28,7 @@ summary.counts <- summary.counts %>%
 
 summary.counts %>%
   filter(Lake %in% c("Independence", "Tahoe"), 
-         Group != "Ostracods", Genus != "Diacyclops") %>%
+         Group != "Ostracods") %>%
   mutate(Percent = round(Percent, 1),
          Genus = factor(Genus, levels=rev(genus.levels))) %>%
   reshape2::dcast(Lake + Group + Genus ~ trip, value.var="Percent") %>%
@@ -77,7 +78,7 @@ summary.cherry.eleanor %>%
   spread(Group, Percent)
 
 counts %>%
-  filter(Lake %in% c("Cherry", "Eleanor")) %>%
+  # filter(Lake %in% c("Cherry", "Eleanor")) %>%
   group_by(trip, Lake) %>%
   filter(Count > 0) %>%
   summarise(richness = length(unique(paste(Group, Genus, Species)))) %>%

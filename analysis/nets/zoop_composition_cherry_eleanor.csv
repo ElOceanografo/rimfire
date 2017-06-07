@@ -1,17 +1,17 @@
 "Lake","Group","Genus","2013-10","2014-04","2014-06","2014-09"
 "Cherry","Cladocerans","Bosmina",10.9,0,0,0
-"Cherry","Cladocerans","Daphnia",4.9,15.7,17.7,29.5
+"Cherry","Cladocerans","Daphnia",4.9,15.7,17.7,29.7
 "Cherry","Cladocerans","Diaphonsoma",0,2.2,0,0
 "Cherry","Cladocerans","Diplostraca",42.9,0,0,0
 "Cherry","Cladocerans","Holopedium",0,33.6,0,0
 "Cherry","Cladocerans","Pseudorida",0,0,0,0
 "Cherry","Cladocerans","Unk. Clad.",0,7.5,12.2,2
 "Cherry","Copepods","Epischura",1.6,1.5,57.5,3.4
-"Cherry","Copepods","Euryclops",22.8,14.9,0,4
-"Cherry","Copepods","Eurytamora",2.2,0,0,4
+"Cherry","Copepods","Euryclops",22.8,14.9,0,4.1
+"Cherry","Copepods","Eurytamora",2.2,0,0,4.1
 "Cherry","Copepods","Leptodiaptomus",0,0,0,3.4
 "Cherry","Copepods","Orthocyclops",0,2.2,0,5.4
-"Cherry","Copepods","Unk. Cope.",14.7,22.4,12.6,47.7
+"Cherry","Copepods","Unk. Cope.",14.7,22.4,12.6,48
 "Eleanor","Cladocerans","Bosmina",4.4,0,0,0
 "Eleanor","Cladocerans","Daphnia",41.6,31.9,11.1,11.8
 "Eleanor","Cladocerans","Diaphonsoma",0,0,0,0
@@ -22,6 +22,6 @@
 "Eleanor","Copepods","Epischura",0.4,38.5,3.7,6.5
 "Eleanor","Copepods","Euryclops",27.7,0,1.1,2.8
 "Eleanor","Copepods","Eurytamora",1.7,0,0,0
-"Eleanor","Copepods","Leptodiaptomus",1.7,0,2.6,1.5
+"Eleanor","Copepods","Leptodiaptomus",1.7,0,2.6,1.6
 "Eleanor","Copepods","Orthocyclops",0,0,2.6,0
-"Eleanor","Copepods","Unk. Cope.",4.8,20.9,67.4,73.4
+"Eleanor","Copepods","Unk. Cope.",4.8,20.9,67.4,73.8

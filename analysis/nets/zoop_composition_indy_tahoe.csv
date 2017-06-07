@@ -1,11 +1,12 @@
 "Lake","Group","Genus","2013-10"
-"Independence","Cladocerans","Bosmina",6
-"Independence","Cladocerans","Daphnia",43.5
+"Independence","Cladocerans","Bosmina",6.3
+"Independence","Cladocerans","Daphnia",45.8
 "Independence","Cladocerans","Diaphonsoma",0
 "Independence","Cladocerans","Diplostraca",0
 "Independence","Cladocerans","Holopedium",0
 "Independence","Cladocerans","Pseudorida",0
 "Independence","Cladocerans","Unk. Clad.",0
+"Independence","Copepods","Diacyclops",47.9
 "Independence","Copepods","Epischura",0
 "Independence","Copepods","Euryclops",0
 "Independence","Copepods","Eurytamora",0
@@ -19,6 +20,7 @@
 "Tahoe","Cladocerans","Holopedium",0
 "Tahoe","Cladocerans","Pseudorida",0
 "Tahoe","Cladocerans","Unk. Clad.",0
+"Tahoe","Copepods","Diacyclops",0
 "Tahoe","Copepods","Epischura",21.9
 "Tahoe","Copepods","Euryclops",0
 "Tahoe","Copepods","Eurytamora",0
