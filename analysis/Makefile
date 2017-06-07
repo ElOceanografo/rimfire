@@ -1,5 +1,5 @@
 GRAPHICS_DIR = graphics/
-FIGURES = $(addprefix $(GRAPHICS_DIR),\
+GRAPHICS = $(addprefix $(GRAPHICS_DIR),\
 		  maps.png \
 		  example_echograms.png \
 		  echo_zooplankton.png \
@@ -15,9 +15,19 @@ FIGURES = $(addprefix $(GRAPHICS_DIR),\
 		  seasonal_biomass.png \
 		  variograms.png \
 		  inlet_distance.png)
+TABLES = nets/ts.display.table.csv\
+		  nets/ts.display.table.fish.csv\
+		  nets/zoop_composition_cherry_eleanor.csv\
+		  nets/zoop_composition_indy_tahoe.csv\
+		  lake_biomass.csv
 
-all : $(FIGURES) 
+all : $(FIGURES) $(TABLES)
 	
+
+######################################################	
+# Figure recipes
+######################################################	
+
 graphics/maps.png: maps.R tracks.Rdata lake_outlines.Rdata
 	R CMD BATCH maps.R /dev/null
 
@@ -58,16 +68,39 @@ graphics/zoop_composition_cherry_eleanor.png: nets.R net_data.Rdata
 	R CMD BATCH nets.R /dev/null
 
 graphics/inlet_distance.png: tracks.Rdata lake_outlines.Rdata
-	R CMD BATCH geostats.R
+	R CMD BATCH geostats.R /dev/null
 
 graphics/variograms.png: tracks.Rdata lake_outlines.Rdata
-	R CMD BATCH geostats.R
-	
+	R CMD BATCH geostats.R /dev/null
+
+######################################################	
+# Output table recipes
+######################################################	
+
 nets/zoop_ts.csv: model_zoops.jl net_data.Rdata
 	julia model_zoops.jl
 
 fish_TS.csv: single_targets.R single_targets.Rdata
 	R CMD BATCH single_targets.R /dev/null
+
+nets/ts.display.table.csv: acoustics.R nets/zoop_ts.csv
+	R CMD BATCH acoustics.R /dev/null
+
+nets/ts.display.table.fish.csv: single_targets.R single_targets.Rdata
+	R CMD BATCH single_targets.R /dev/null
+
+nets/zoop_composition_cherry_eleanor.csv: nets.R net_data.Rdata
+	R CMD BATCH nets.R /dev/null
+	
+nets/zoop_composition_indy_tahoe.csv: nets.R net_data.Rdata
+	R CMD BATCH nets.R /dev/null
+
+lake_biomass.csv: acoustics.R acoustics.Rdata net_data.Rdata nets/zoop_ts.csv fish_TS.csv
+	R CMD BATCH nets.R /dev/null
+
+######################################################	
+# Data formatting and downloads
+######################################################	
 
 acoustics.Rdata: load_acoustics.R ../acoustics/Exports/*
 	R CMD BATCH load_acoustics.R /dev/null
