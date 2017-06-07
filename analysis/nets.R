@@ -28,7 +28,8 @@ summary.counts <- summary.counts %>%
 
 summary.counts %>%
   filter(Lake %in% c("Independence", "Tahoe"), 
-         Group != "Ostracods") %>%
+         Group != "Ostracods",
+         Count > 0) %>%
   mutate(Percent = round(Percent, 1),
          Genus = factor(Genus, levels=rev(genus.levels))) %>%
   reshape2::dcast(Lake + Group + Genus ~ trip, value.var="Percent") %>%

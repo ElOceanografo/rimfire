@@ -259,7 +259,6 @@ reshape2::dcast(lake.biomass, Lake + class ~ trip, value.var="total")
 lake.biomass.display <- lake.biomass %>%
   reshape2::dcast(Lake + trip ~ class, value.var="total") %>%
   mutate(ratio = Sv_zoop / Sv_fish) %>%
-  filter(Lake != "Independence") %>%
   arrange(trip, Lake) %>%
   rename(Zoop = Sv_zoop, Fish = Sv_fish) %>%
   mutate(Zoop = signif(Zoop, 2),
