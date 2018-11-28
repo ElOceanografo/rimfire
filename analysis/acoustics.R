@@ -41,6 +41,8 @@ echo <- mutate(echo,
             Sv_zoop = Sv_710,
             Sv_fish = Sv_120)
 echo$class[echo$delta > -10 | echo$Sv_120 > -60] <- "Fish"
+# Apply top-threshold since there's only 710 kHz data from Independence
+echo$class[echo$Lake=="Independence" & echo$Sv_710 > -75] <- "Fish"
 echo$Sv_zoop[echo$class == "Fish"] <- NA
 echo$Sv_fish[echo$class == "Zooplankton" | echo$Sv_fish < -90] <- -Inf
 echo <- filter(echo, Sv_fish < -40) # eliminate a few noise spikes I didn't catch in EV
@@ -331,23 +333,40 @@ net.times <- read.csv("nets/net_times.csv") %>%
 # 
 # plot(Sv_zoop ~ datetime, filter(echo, Lake=="Eleanor", trip=="2013-10"))
 # 
-# filter(echo, Lake=="Cherry", trip=="2014-04") %>%
-#   ggplot(aes(x=Interval, y=Layer_depth_max, fill=Sv_zoop)) + 
-#   geom_tile() + scale_y_reverse() + scale_fill_viridis(limits=c(-80, -60))
+filter(echo, Lake=="Eleanor", trip=="2014-04") %>%
+  ggplot(aes(x=Interval, y=Layer_depth_max, fill=Sv_zoop)) +
+  geom_tile() + scale_y_reverse() + scale_fill_viridis()#limits=c(-100, -70))
+
+net.locs <- echo %>%
+  mutate(net.time = ymd_hm(paste(Date_M, hour, minute))) %>%
+  select(trip, Lake, net.time, Lat_M, Lon_M) %>%
+  inner_join(net.times) %>% 
+  group_by(trip, Lake) %>%
+  summarize(net.time=first(net.time), net.lat=first(Lat_M), net.lon=first(Lon_M)) %>%
+  ungroup()
 
 net.echo <- echo %>%
-  mutate(datetime = ymd_hm(paste(Date_M, hour, minute))) %>%
-  filter(class=="Zooplankton") %>%
+  left_join(net.locs) %>% 
+  group_by(trip, Lake) %>%
+  mutate(net.dist = oce::geodDist(Lon_M, Lat_M, net.lon, net.lat),
+         timedelta = net.time - datetime) %>%
+  ungroup() %>%
+  filter(class=="Zooplankton", 
+         net.dist < .025, 
+         timedelta < 10*60, 
+         Layer_depth_max < 30) %>%
   select(trip, Lake, datetime, Layer_depth_max, Sv_zoop) %>%
-  left_join(net.times) %>%
-  mutate(delta = abs(datetime - net.time)) %>%
-  filter(delta < 60 * 10, Layer_depth_max < 30) %>%
   left_join(mean.ts.zoop) %>%
   mutate(sv_zoop = 10^(Sv_zoop/10),
          density_acoustic = sv_zoop / sigma,
          biomass_acoustic = density_acoustic * weight) %>%
-  group_by(trip, Lake) %>%
+  group_by(trip, Lake, Layer_depth_max) %>%
   summarize(sv = mean(sv_zoop, na.rm=T),
+            density_acoustic = mean(density_acoustic, na.rm=T),
+            biomass_acoustic = mean(biomass_acoustic, na.rm=T)) %>%
+  ungroup()  %>%
+  group_by(trip, Lake) %>%
+  summarize(sv = mean(sv, na.rm=T),
             density_acoustic = mean(density_acoustic, na.rm=T),
             biomass_acoustic = mean(biomass_acoustic, na.rm=T)) %>%
   ungroup()  %>%
@@ -356,6 +375,7 @@ net.echo <- echo %>%
   mutate(biovolume.calc = num.density * volume ,
          biomass.calc = num.density * weight) %>%
   rename(biovolume_gc = biovolume)
+
 net.echo
 pairs(~ sv + density_acoustic + biomass_acoustic + biovolume_gc + num.density + biovolume.calc,
       net.echo, pch=16, cex=2)
@@ -373,23 +393,21 @@ confint(mod.net.acoustic.outlier)
 net.echo$label.y <- net.echo$biovolume_gc
 net.echo$label.x <- net.echo$biomass_acoustic
 select(net.echo, Lake, trip, label.x, label.y)
-
-# net.echo$label.y[3] <- net.echo$label.y[3] + 0.02
-net.echo$label.y[4] <- net.echo$label.y[4] + 0.15
-net.echo$label.x[4] <- net.echo$label.x[4] - 0.5
-net.echo$label.y[2] <- net.echo$label.y[2] - 0.13
-net.echo$label.x[2] <- net.echo$label.x[2] - 0.5
-net.echo$label.y[1] <- net.echo$label.y[1] - 0.03
-net.echo$label.x[6] <- net.echo$label.x[6] - 5
+  
+net.echo$label.y[3] <- net.echo$label.y[3] + 0.03
+net.echo$label.y[2] <- net.echo$label.y[2] - 0.03
+net.echo$label.y[1] <- net.echo$label.y[1] - 0.15
+net.echo$label.x[1] <- net.echo$label.x[1] - 0.02
+net.echo$label.x[5] <- net.echo$label.x[5] - 0.2
 
 png("graphics/net_vs_acoustics.png", width=1000, height=700, pointsize = 24)
 mar.default <- par("mar")
 par(mar=c(5, 5, 3, 2))
-plot(biovolume_gc ~ biomass_acoustic, net.echo.sub, xlim=c(0, 20), ylim=c(-0.1, 2.5),
+plot(biovolume_gc ~ biomass_acoustic, net.echo.sub, xlim=c(0, 0.8), ylim=c(-0.1, 2.5),
      pch=16, bty='n', xlab=expression(Acoustic~biomass~(g~m^-3)),
      ylab=expression(Net~biovolume~(mL~m^-3)))
-points(biovolume_gc ~ biomass_acoustic, net.echo[6, ])
-text(net.echo$label.x, net.echo$label.y, paste(net.totals$Lake, net.totals$trip), 
+points(biovolume_gc ~ biomass_acoustic, net.echo[5, ], pch=1)
+text(net.echo$label.x, net.echo$label.y, paste(net.echo$Lake, net.echo$trip),
      pos=4, cex=0.8, col="#666666")
 lines(0:15, predict(mod.net.acoustic, newdata=list(biomass_acoustic=0:15)))
 lines(0:15, predict(mod.net.acoustic.outlier, newdata=list(biomass_acoustic=0:15)), lty=2)
