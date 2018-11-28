@@ -3,6 +3,7 @@
 *.zip
 *.Rout
 *Rplots.pdf
+*.xlsx
 NHD_H_1605_Shape/*
 NHD_H_1804_Shape/*
 *~
