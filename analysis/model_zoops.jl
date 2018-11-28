@@ -1,10 +1,16 @@
-using DataFrames, DataFramesMeta, SDWBA, Distributions, FileIO
+using DataFrames
+using DataFramesMeta
+using SDWBA
+using Distributions
+using FileIO
+using Random
 
 const sound_speed = 1500.0
 
-srand(697180031068324823)
+Random.seed!(697180031068324823)
 
-dB_mean(x) = 10 * log10(mean(10.^(x ./ 10)))
+dB_mean(x) = 10 * log10(mean(10 .^(x ./ 10)))
+dB_var(x) = 10 * log10(var(10 .^ (x ./ 10)))
 
 function zoop_volume(s::Scatterer)
     v = 0.0
@@ -20,16 +26,17 @@ end
 rdata = load(File(format"RData", "net_data.Rdata"))
 individuals = rdata["individuals"]
 
-counts = rdata["counts"] 
+counts = rdata["counts"]
 
 
 individuals[:model] = copy(individuals[:Group])
-individuals[:model][individuals[:LifeStage] .== "Nauplius"] = "Nauplius"
-individuals = @where(individuals, (:model .== "Copepods") | (:model .== "Cladocerans") | (:model .== "Nauplius"))
+individuals[:model][individuals[:LifeStage] .== "Nauplius"] .= "Nauplius"
+individuals = @where(individuals, (:model .== "Copepods") .| (:model .== "Cladocerans") .| (:model .== "Nauplius"))
 
 counts[:model] = copy(counts[:Group])
-counts[:model][counts[:LifeStage] .== "Nauplius"] = "Nauplius"
-# counts = @where(counts, (:model .== "Copepods") | (:model .== "Cladocerans") | (:model .== "Nauplius"))
+counts = @where(counts, (:model .== "Copepods") .| (:model .== "Cladocerans") .| (:model .== "Nauplius"))
+counts[ismissing.(counts[:LifeStage]), :LifeStage] = "Adult"
+counts[:model][counts[:LifeStage] .== "Nauplius"] .= "Nauplius"
 
 
 summary_lengths = @linq individuals |>
@@ -59,8 +66,7 @@ individuals_imputed = DataFrame(
     trip = ["2014-06", "2014-09", "2014-09"],
     Lake = ["Eleanor", "Cherry", "Eleanor"],
     model = ["Nauplius", "Nauplius", "Cladocerans"],
-    Length = [avg_nauplius_length, avg_nauplius_length, avg_cladoceran_length],
-)
+    Length = [avg_nauplius_length, avg_nauplius_length, avg_cladoceran_length])
 individuals_imputed = join(individuals_imputed, lw_regression, on=[:model], kind=:left)
 individuals_imputed = @transform(individuals_imputed, weight = :a .* :Length.^:b * 1e-6)
 
@@ -71,8 +77,9 @@ individuals = [individuals; individuals_imputed]
 nsim = 1000
 zoop_ts = by(individuals, [:trip, :Lake, :model]) do df
 	scat = models[first(df[:model])]
-    # in case all the lengths are the same, 
-	sigma = max(std(df[:Length]), 0.0002)
+    # in case all the lengths are the same,
+	sigma = std(df[:Length])
+	sigma = isfinite(sigma) & (sigma > 0) ? sigma : 0.0002
 	L = Normal(mean(df[:Length]) / 1e3, sigma / 1e3)
 	TS120 = zeros(nsim)
 	TS710 = zeros(nsim)
@@ -85,6 +92,7 @@ zoop_ts = by(individuals, [:trip, :Lake, :model]) do df
 	end
 	DataFrame(freq = [120, 710],
 		TS = [dB_mean(TS120), dB_mean(TS710)],
+		TS_var = [var(TS120), var(TS710)],
         volume = [mean(volume), mean(volume)],
 		weight = [mean(df[:weight]), mean(df[:weight])])
 end
@@ -100,7 +108,6 @@ proportions = @linq counts |>
 zoop_ts = join(zoop_ts, proportions, on=[:trip, :Lake, :model], kind=:left)
 # convert dry to wet biomass (equation from Wiebe et al. 1975). Factor of 1e3
 # is because equation was fit using DW values in mg, but wet-weight values in g.
-zoop_ts[:weight] =  10.^(-1.983 + 0.922 * log10(zoop_ts[:weight])) * 1e3
+zoop_ts[:weight] =  10 .^(-1.983 + 0.922 * log10(zoop_ts[:weight])) * 1e3
 
-writetable("nets/zoop_ts.csv", zoop_ts)
-
+save("nets/zoop_ts.csv", zoop_ts)
