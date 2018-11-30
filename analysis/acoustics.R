@@ -97,29 +97,31 @@ with(echogram.120,
 )
 
 echogram <- rbind(echogram.120, echogram.710) %>%
-  mutate(width = 1,
-         datetime = datetime - hm("07:00"))
+  mutate(width = 2,
+         datetime = datetime - hm("07:00"),
+         Dist_M = Dist_M - min(Dist_M))
 
-db.120 <- select(echogram.120, Layer_depth_max, datetime, Sv_mean)
-db.710 <- select(echogram.710, Layer_depth_max, datetime, Sv_mean)
-db.diff <- left_join(db.120, db.710, by=c("Layer_depth_max", "datetime")) %>%
+db.120 <- select(echogram.120, Layer_depth_max, datetime, Dist_M, Sv_mean)
+db.710 <- select(echogram.710, Layer_depth_max, datetime, Dist_M, Sv_mean)
+db.diff <- left_join(db.120, db.710, by=c("Layer_depth_max", "datetime", "Dist_M")) %>%
   mutate(delta = Sv_mean.x - Sv_mean.y,
          class = "Zoop",
-         datetime = datetime - hm("07:00"))
+         datetime = datetime - hm("07:00"),
+         Dist_M = Dist_M - min(Dist_M))
 db.diff$class[db.diff$delta > 0] <- "Fish"
 db.diff$class[db.diff$Sv_mean.y < -80] <- "Empty"
 
 echo.col <- c("#FFFFFF", rev(viridis(24, option="A")))
 
 p1 <-  ggplot() +
-  geom_tile(aes(x=datetime, y=Layer_depth_max, fill=Sv_mean, width=width), 
+  geom_tile(aes(x=Dist_M, y=Layer_depth_max, fill=Sv_mean, width=width), 
             data=filter(echogram, freq == 120)) +
   scale_fill_gradientn(colors=echo.col, limits=c(-80, -50), oob=squish, name=expression(S[v~120])) +
-  geom_point(aes(x=datetime, y=Layer_depth_max, color=Sv_mean),
+  geom_point(aes(x=Dist_M, y=Layer_depth_max, color=Sv_mean),
              data=filter(echogram, freq == 120, Sv_mean > -75),
              shape=15, size=0.7) +
   scale_color_gradientn(colors=echo.col, limits=c(-80, -50), oob=squish, guide=F) +
-  scale_x_datetime(expand=c(0, 0), name="Time") +
+  scale_x_continuous(expand=c(0, 0), name="Distance (m)") +
   scale_y_reverse(limits=c(20, 1.5), expand=c(0, 0), name="Depth (m)") + 
   ggtitle("a") + theme_bw() + 
   theme(plot.title=element_text(hjust=0),
@@ -128,9 +130,9 @@ p1 <-  ggplot() +
 
 
 p2 <- filter(echogram, freq==710) %>%
-  ggplot(aes(x=datetime, y=Layer_depth_max, fill=Sv_mean, width=1)) +
+  ggplot(aes(x=Dist_M, y=Layer_depth_max, fill=Sv_mean, width=width)) +
   geom_tile() +
-  scale_x_datetime(expand=c(0, 0), name="Time") +
+  scale_x_continuous(expand=c(0, 0), name="Distance (m)") +
   scale_y_reverse(limits=c(20, 1.5), expand=c(0, 0), name="Depth (m)") + 
   scale_fill_gradientn(colors=echo.col, limits=c(-80, -50), oob=squish, name=expression(S[v~710])) +
   ggtitle("b") + theme_bw() + 
@@ -139,12 +141,12 @@ p2 <- filter(echogram, freq==710) %>%
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 p3 <-  ggplot() +
-  geom_tile(aes(x=datetime, y=Layer_depth_max, fill=class, width=1), data=db.diff) +
+  geom_tile(aes(x=Dist_M, y=Layer_depth_max, fill=class, width=2), data=db.diff) +
   scale_fill_manual(labels=c("", "F", "Z"), name="Class",
                       values=c("white", "red", "lightskyblue")) +
-  geom_point(aes(x=datetime, y=Layer_depth_max), data=filter(db.diff, class=="Fish"),
+  geom_point(aes(x=Dist_M, y=Layer_depth_max), data=filter(db.diff, class=="Fish"),
              color="red", shape=15, size=0.7) +
-  scale_x_datetime(expand=c(0, 0), name="Time") +
+  scale_x_continuous(expand=c(0, 0), name="Distance (m)") +
   scale_y_reverse(limits=c(20, 1.5), expand=c(0, 0), name="Depth (m)") +
   ggtitle("c") + theme_bw() +
   theme(plot.title=element_text(hjust=0),
