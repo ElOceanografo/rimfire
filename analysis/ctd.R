@@ -57,6 +57,6 @@ p <- ggplot() +
   scale_x_continuous(expression(Temperature~("°C"))) +
   facet_grid(. ~ trip) + theme_minimal()
 p
-ggsave("graphics/ctd.png", p)
+ggsave("graphics/ctd.png", p, width=6, height=3)
 
 
