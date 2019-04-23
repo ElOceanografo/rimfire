@@ -42,7 +42,7 @@ counts[:model][counts[:LifeStage] .== "Nauplius"] .= "Nauplius"
 summary_lengths = @linq individuals |>
 	by([:trip, :Lake, :model], mean_length=mean(:Length))
 
-# Length-weight regressions from Culver et al. 1985, CJFAS
+# Length-dry weight regressions from Culver et al. 1985, CJFAS
 # W = a*L^b (W in micrograms, L in mm)
 lw_regression = DataFrame(
 	model = ["Copepods", "Cladocerans", "Nauplius"],
@@ -50,8 +50,8 @@ lw_regression = DataFrame(
 	b = [2.1, 1.5644, 1.7064])
 
 individuals = join(individuals, lw_regression, on=[:model], kind=:left)
-# factor of 1e-6 to convert weights to grams
-individuals = @transform(individuals, weight = :a .* :Length.^:b * 1e-6)
+# factor of 1e-6 to convert dry weights from μg to grams
+individuals = @transform(individuals, dryweight = :a .* :Length.^:b * 1e-6)
 
 
 models = Dict("Copepods" => Models.calanoid_copepod,
@@ -68,10 +68,10 @@ individuals_imputed = DataFrame(
     model = ["Nauplius", "Nauplius", "Cladocerans"],
     Length = [avg_nauplius_length, avg_nauplius_length, avg_cladoceran_length])
 individuals_imputed = join(individuals_imputed, lw_regression, on=[:model], kind=:left)
-individuals_imputed = @transform(individuals_imputed, weight = :a .* :Length.^:b * 1e-6)
+individuals_imputed = @transform(individuals_imputed, dryweight = :a .* :Length.^:b * 1e-6)
 
-individuals = @select(individuals, :trip, :Lake, :model, :Length, :weight)
-individuals_imputed = @select(individuals_imputed, :trip, :Lake, :model, :Length, :weight)
+individuals = @select(individuals, :trip, :Lake, :model, :Length, :dryweight)
+individuals_imputed = @select(individuals_imputed, :trip, :Lake, :model, :Length, :dryweight)
 individuals = [individuals; individuals_imputed]
 
 nsim = 1000
@@ -94,13 +94,12 @@ zoop_ts = by(individuals, [:trip, :Lake, :model]) do df
 		TS = [dB_mean(TS120), dB_mean(TS710)],
 		TS_var = [var(TS120), var(TS710)],
         volume = [mean(volume), mean(volume)],
-		weight = [mean(df[:weight]), mean(df[:weight])])
+		dryweight = [mean(df[:dryweight]), mean(df[:dryweight])])
 end
 
 totals = @by(counts, [:trip, :Lake], total = sum(:Count))
 proportions = @linq counts |>
-    groupby([:trip, :Lake, :model]) |>
-    based_on(n = sum(:Count)) |>
+    by([:trip, :Lake, :model], n=sum(:Count)) |>
 	join(totals, on=[:trip, :Lake], kind=:left) |>
 	transform(proportion = :n ./ :total)
 
@@ -108,6 +107,6 @@ proportions = @linq counts |>
 zoop_ts = join(zoop_ts, proportions, on=[:trip, :Lake, :model], kind=:left)
 # convert dry to wet biomass (equation from Wiebe et al. 1975). Factor of 1e3
 # is because equation was fit using DW values in mg, but wet-weight values in g.
-zoop_ts[:weight] =  10 .^(-1.983 + 0.922 * log10(zoop_ts[:weight])) * 1e3
+zoop_ts[:weight] =  10 .^(-1.983 .+ 0.922 * log10.(zoop_ts[:dryweight] * 1e3))
 
 save("nets/zoop_ts.csv", zoop_ts)

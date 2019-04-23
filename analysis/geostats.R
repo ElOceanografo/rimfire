@@ -114,10 +114,10 @@ tracks %>%
   filter(class=="Sv_fish") %>%
   mutate(shore.round = round(shore.dist, 1), inlet.round=round(inlet.dist)) %>%
   group_by(Lake, trip, shore.round, inlet.round) %>%
-  summarise(density = mean(density)) %>%
+  summarise(density = mean(density, na.rm=TRUE)) %>%
   ggplot(aes(x=inlet.round, y=shore.round, fill=log10(density))) +
-  geom_tile() + scale_fill_viridis() +
-  facet_grid(Lake ~ trip)
+    geom_tile() + scale_fill_viridis() +
+    facet_grid(Lake ~ trip)
 
 
 ## Plots of biomass vs. inlet distance
@@ -131,6 +131,7 @@ p <- filter(tracks, class=="Sv_zoop") %>%
   xlab("Distance to inlet (km)") +
   facet_grid(Lake~trip, scales="free_x") +
   theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
+p
 ggsave("graphics/inlet_distance.png", p, w=8, h=5, units="in")
 
 p <- filter(tracks, class=="Sv_fish") %>%
@@ -154,6 +155,7 @@ p <- filter(tracks, class=="Sv_zoop") %>%
   xlab("Distance to shore (km)") +
   facet_grid(Lake~trip) +
   theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
+p
 ggsave("graphics/shore_distance.png", p, w=8, h=5, units="in")
 
 p <- filter(tracks, class=="Sv_fish") %>%
@@ -182,12 +184,8 @@ tracks.zoop <- filter(tracks, class=="Sv_zoop")
 tracks.fish <- filter(tracks, class=="Sv_fish", Lake != "Independence")
 
 filter(tracks.zoop, Lake=="Cherry", trip=="2013-10") %>%
-ggplot(aes(x=Interval, y=biomass)) + 
-  geom_point() + geom_line()
-# 
-# i <- which(tracks.zoop$Lake=="Cherry" & tracks.zoop$trip=="2013-10" & tracks.zoop$Interval==90)
-# tracks.zoop$biomass[i] <- tracks.zoop$biomass[i-1]
-
+  ggplot(aes(x=Interval, y=biomass)) + 
+    geom_point() + geom_line()
 
 models <- plyr::dlply(tracks.zoop, c("Lake", "trip"), function(df) {
   lm(log10(biomass) ~ inlet.dist + shore.dist, data=df)
@@ -229,8 +227,8 @@ vg.emp.zoop <- plyr::dlply(tracks.zoop, c("trip", "Lake"), function (df) {
   span <- sqrt(diff(range(df$x))^2 + diff(range(df$y))^2)
   z <- df$resid / sd(df$resid)
   variogram(resid ~ 1, locations = ~ x + y, data=na.exclude(df),
-             cutoff=span/1.9, width=0.25) 
-  })
+             cutoff=span/1.9, width=0.25)
+})
 
 vg.emp.df.zoop <- plyr::ldply(vg.emp.zoop, function(v) data.frame(dist = v$dist, gamma=v$gamma))
 
@@ -241,3 +239,120 @@ p <- ggplot(vg.emp.df.zoop, aes(x=dist, y=gamma, linetype=Lake)) +
   theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
 p
 ggsave("graphics/variograms.png", p, width=7, height=2, units="in")
+
+#################################
+# Kriging and biomass integration
+#################################
+
+grid.inside.polygon <- function(x, y, dx, dy) {
+  range.x <- range(x)
+  range.y <- range(y)
+  range.x <- range.x - ((range.x + c(-dx, dx)) %% dx)
+  range.y <- range.y - ((range.y + c(-dy, dy)) %% dy)
+  grid <- expand.grid(seq(range.x[1], range.x[2], by=dx),
+                      seq(range.y[1], range.y[2], by=dy))
+  names(grid) <- c("x", "y")
+  in.lake <- sp::point.in.polygon(grid$x, grid$y, x, y)
+  in.lake <- in.lake == 1
+  return(grid[in.lake, ])
+}
+
+indy <- filter(lakes, Lake=="Independence")
+g <- grid.inside.polygon(indy$x, indy$y, .1, .1)
+plot(y ~ x, indy)
+points(g$x, g$y, col="red")
+
+vg.model.zoop <- plyr::llply(vg.emp.zoop, fit.variogram, model=vgm(0.2, "Sph", 1))
+# Not enough spatial extent/data in Cherry to fit a meaningful
+# variogram model, assume Eleanor one is okay for this date
+vg.model.zoop$`2014-04.Cherry` <- vg.model.zoop$`2014-04.Eleanor`
+
+lake.grids <- plyr::ddply(filter(lakes, Lake!="Tahoe"), "Lake", function(df) {
+  grid <- grid.inside.polygon(df$x, df$y, dx=0.1, dy=0.1)
+  grid$x <- round(grid$x, 1)
+  grid$y <- round(grid$y, 1)
+  return(grid)
+})
+
+lake.grids <- lake.grids %>%
+  left_join(inlet.xy) %>%
+  mutate(inlet.dist = sqrt((inlet.x - x)^2 + (inlet.y - y)^2))
+
+lake.grids$shore.dist <- 0
+for (Lake in c("Cherry", "Eleanor", "Independence")) {
+  shore <- filter(lakes, Lake==Lake)
+  ii <- lake.grids$Lake == Lake
+  dists <- rep(0, sum(ii))
+  for (j in 1:length(dists)) {
+    dx <- lake.grids$x[ii][j] - shore$x
+    dy <- lake.grids$y[ii][j] - shore$y
+    dists[j] <- min(sqrt(dx^2 + dy^2), na.rm=T)
+  }
+  lake.grids$shore.dist[ii] <- dists
+}
+ggplot(lake.grids, aes(x=x, y=y, color=shore.dist)) + 
+  geom_point() + scale_color_viridis() +
+  facet_wrap(~Lake, scales="free")
+lake.grids.list <- plyr::dlply(lake.grids, "Lake")
+for (i in 1:length(lake.grids.list)) {
+  sp::coordinates(lake.grids.list[[i]]) <- ~ x + y
+}
+
+
+zoop.kriged <- list()
+for (trip.lake in names(vg.model.zoop)) {
+  trip <- strsplit(trip.lake, ".", fixed=TRUE)[[1]][[1]]
+  Lake <- strsplit(trip.lake, ".", fixed=TRUE)[[1]][[2]]
+  grid <- lake.grids.list[[Lake]]
+  vg <- vg.model.zoop[[trip.lake]]
+  data <- tracks.zoop[tracks.zoop$Lake==Lake & tracks.zoop$trip==trip, ]
+  print(paste(trip.lake, trip, Lake, nrow(data)))
+  sp::coordinates(data) <- ~ x + y
+  gs <- gstat(NULL, "logbiomass", log10(biomass) ~ 1,#shore.dist + inlet.dist, 
+              data=data, model=vg)
+  zoop.kriged[[trip.lake]] <- predict(gs, grid)
+}
+
+zoop.kriged <- plyr::ldply(zoop.kriged, function(spdf) {
+  df <- data.frame(cbind(sp::coordinates(spdf), spdf$logbiomass.pred, spdf$logbiomass.var))
+  names(df) <- c("x", "y", "logbiomass.pred", "logbiomass.var")
+  return(df)
+})
+zoop.kriged <- cbind(colsplit(zoop.kriged$.id, "\\.", c("trip", "Lake")), zoop.kriged)
+zoop.kriged <- zoop.kriged %>%
+  mutate(logbiomass.sd = sqrt(logbiomass.var),
+         logbiomass.lo = logbiomass.pred - 1.96 * logbiomass.sd,
+         logbiomass.hi = logbiomass.pred + 1.96 * logbiomass.sd)
+  
+zoop.kriged %>%
+  filter(Lake == "Independence") %>%
+  ggplot(aes(x=x, y=y, fill=logbiomass.pred)) +
+    geom_raster() + scale_fill_viridis() 
+
+zoop.kriged %>%
+  filter(Lake != "Independence") %>%
+  tidyr::gather("var", "value", logbiomass.pred, logbiomass.sd) %>%
+  ggplot() +
+    geom_raster(aes(x=x, y=y, fill=value)) + scale_fill_viridis() +#limits=c(0, 10)) +
+    geom_path(aes(x=x, y=y, group=Lake), data=filter(tracks.zoop, Lake!="Independence")) +
+    facet_grid(var ~ trip) + coord_equal()
+
+zoop.integrated <-  zoop.kriged %>%
+  group_by(trip, Lake) %>%
+  # integration cells are 100m^2, divided by 1000 g/kg
+  summarise(biomass.lo = sum(10^logbiomass.lo) * 100^2/1e3,
+            biomass = sum(10^logbiomass.pred) * 100^2/1e3,
+            biomass.hi = sum(10^logbiomass.hi) * 100^2/1e3) %>%
+  ungroup()
+
+ybreaks = c(1e3, 1e4, 1e5, 1e6)
+ymbreaks = c(seq(1e3, 1e4, 1e3), seq(1e4, 1e5, 1e4), seq(1e5, 1e6, 1e5))
+ggplot(zoop.integrated, aes(x=trip, y=biomass, shape=Lake, linetype=Lake)) +
+  geom_point(position=position_dodge(0.2)) +
+  geom_errorbar(aes(ymin=biomass.lo, ymax=biomass.hi), 
+                position=position_dodge(0.2), width=0.18) +
+  xlab("Date") + 
+  scale_y_log10(expression(Biomass~(kg)), 
+                breaks=ybreaks, minor_breaks=ymbreaks, 
+                labels=trans_format('log10',math_format(10^.x))) +
+  theme_minimal()

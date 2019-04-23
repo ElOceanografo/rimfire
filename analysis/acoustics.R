@@ -260,6 +260,9 @@ reshape2::dcast(lake.biomass, Lake + class ~ trip, value.var="density")
 reshape2::dcast(lake.biomass, Lake + class ~ trip, value.var="biomass")
 reshape2::dcast(lake.biomass, Lake + class ~ trip, value.var="total")
 
+reshape2::dcast(lake.biomass, trip + Lake ~ class, value.var="biomass")
+
+
 lake.biomass.display <- lake.biomass %>%
   reshape2::dcast(Lake + trip ~ class, value.var="total") %>%
   mutate(ratio = Sv_zoop / Sv_fish) %>%
@@ -332,9 +335,7 @@ net.totals <- counts %>%
 
 net.times <- read.csv("nets/net_times.csv") %>%
   mutate(net.time = ymd_hm(net.time))
-# 
-# plot(Sv_zoop ~ datetime, filter(echo, Lake=="Eleanor", trip=="2013-10"))
-# 
+
 filter(echo, Lake=="Eleanor", trip=="2014-04") %>%
   ggplot(aes(x=Interval, y=Layer_depth_max, fill=Sv_zoop)) +
   geom_tile() + scale_y_reverse() + scale_fill_viridis()#limits=c(-100, -70))
@@ -391,7 +392,16 @@ mod.net.acoustic.outlier <- lm(biovolume_gc ~ 0 + biomass_acoustic, net.echo)
 summary(mod.net.acoustic.outlier)
 confint(mod.net.acoustic.outlier)
 
+## Geometric mean regression
+(mod.net.acoustic.yx <- lm(biomass_acoustic ~ 0 + biovolume_gc, net.echo.sub))
+m <- sqrt(coef(mod.net.acoustic) * (1/coef(mod.net.acoustic.yx)))
+b <- with(net.echo.sub, mean(biovolume_gc) - m * mean(biomass_acoustic))
 
+(mod.net.acoustic.yx.out <- lm(biomass_acoustic ~ 0 + biovolume_gc, net.echo))
+m.outlier <- sqrt(coef(mod.net.acoustic.outlier) * (1/coef(mod.net.acoustic.yx.out)))
+b.outlier <- with(net.echo, mean(biovolume_gc) - m.outlier * mean(biomass_acoustic))
+
+ 
 net.echo$label.y <- net.echo$biovolume_gc
 net.echo$label.x <- net.echo$biomass_acoustic
 select(net.echo, Lake, trip, label.x, label.y)
@@ -400,12 +410,12 @@ net.echo$label.y[3] <- net.echo$label.y[3] + 0.03
 net.echo$label.y[2] <- net.echo$label.y[2] - 0.03
 net.echo$label.y[1] <- net.echo$label.y[1] - 0.15
 net.echo$label.x[1] <- net.echo$label.x[1] - 0.02
-net.echo$label.x[5] <- net.echo$label.x[5] - 0.2
+net.echo$label.x[5] <- net.echo$label.x[5] - 3
 
 png("graphics/net_vs_acoustics.png", width=1000, height=700, pointsize = 24)
 mar.default <- par("mar")
 par(mar=c(5, 5, 3, 2))
-plot(biovolume_gc ~ biomass_acoustic, net.echo.sub, xlim=c(0, 0.8), ylim=c(-0.1, 2.5),
+plot(biovolume_gc ~ biomass_acoustic, net.echo.sub, xlim=c(0, 12), ylim=c(-0.1, 3),
      pch=16, bty='n', xlab=expression(Acoustic~biomass~(g~m^-3)),
      ylab=expression(Net~biovolume~(mL~m^-3)))
 points(biovolume_gc ~ biomass_acoustic, net.echo[5, ], pch=1)

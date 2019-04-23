@@ -56,6 +56,6 @@ ts.display.table.fish <- targets %>%
             n = n())
 ts.display.table.fish[, 3:8] <- signif(ts.display.table.fish[ , 3:8], 2)
 for (col in c("TS.sd", "length.sd", "weight.sd")) {
-  ts.display.table.fish[[col]] <- paste0("(", ts.display.table.fish[[col]], ")")
+  ts.display.table.fish[[col]] <- paste0("± ", ts.display.table.fish[[col]])
 }
 write.csv(ts.display.table.fish, "nets/ts.display.table.fish.csv")
