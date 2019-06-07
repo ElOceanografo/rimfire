@@ -1,6 +1,7 @@
 Seasonal changes in the biomass, distribution, and patchiness of zooplankton and fish in four lakes in the Sierra Nevada, California
 ----------------
 Samuel S. Urmy and Joseph D. Warren
+
 Freshwater Biology *** (***), ***-***
 
 DOI: ***
