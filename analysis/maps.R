@@ -102,5 +102,6 @@ lay <- matrix(c(1, 2, 3,
                 4, 4, 4), byrow=T, nrow=3)
 p.map <- grid.arrange(grobs=list(p.cal, p.ind, p.tahoe, p.cherry.eleanor), layout_matrix=lay)
 ggsave("graphics/maps.png", p.map, width=7, height=10, units="in")
+ggsave("graphics/maps.eps", p.map, width=7, height=10, units="in")
 
 

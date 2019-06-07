@@ -58,5 +58,6 @@ p <- ggplot() +
   facet_grid(. ~ trip) + theme_minimal()
 p
 ggsave("graphics/ctd.png", p, width=6, height=3)
+ggsave("graphics/ctd.eps", p, width=6, height=3)
 
 

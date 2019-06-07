@@ -112,6 +112,7 @@ db.diff$class[db.diff$delta > 0] <- "Fish"
 db.diff$class[db.diff$Sv_mean.y < -80] <- "Empty"
 
 echo.col <- c("#FFFFFF", rev(viridis(24, option="A")))
+bottom.col <- "black" # "grey50"
 
 p1 <-  ggplot() +
   geom_tile(aes(x=Dist_M, y=Layer_depth_max, fill=Sv_mean, width=width), 
@@ -125,7 +126,7 @@ p1 <-  ggplot() +
   scale_y_reverse(limits=c(20, 1.5), expand=c(0, 0), name="Depth (m)") + 
   ggtitle("a") + theme_bw() + 
   theme(plot.title=element_text(hjust=0),
-      panel.background=element_rect(fill="grey50"),
+      panel.background=element_rect(fill=bottom.col),
       panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 
@@ -137,7 +138,7 @@ p2 <- filter(echogram, freq==710) %>%
   scale_fill_gradientn(colors=echo.col, limits=c(-80, -50), oob=squish, name=expression(S[v~710])) +
   ggtitle("b") + theme_bw() + 
   theme(plot.title=element_text(hjust=0),
-        panel.background=element_rect(fill="grey50"),
+        panel.background=element_rect(fill=bottom.col),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 p3 <-  ggplot() +
@@ -150,10 +151,14 @@ p3 <-  ggplot() +
   scale_y_reverse(limits=c(20, 1.5), expand=c(0, 0), name="Depth (m)") +
   ggtitle("c") + theme_bw() +
   theme(plot.title=element_text(hjust=0),
-        panel.background=element_rect(fill="grey50"),
+        panel.background=element_rect(fill=bottom.col),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 png("graphics/example_echograms.png", width=7, height=6, units="in", res=300)
+grid.arrange(p1, p2, p3, ncol=1)
+dev.off()
+
+tiff("graphics/example_echograms.tiff", width=7, height=6, units="in", res=300)
 grid.arrange(p1, p2, p3, ncol=1)
 dev.off()
 
@@ -229,6 +234,7 @@ p2 <- ggplot(profiles.fish, aes(y=depth, x=biomass, linetype=Lake, shape=Lake)) 
   theme_minimal() + theme(panel.border = element_rect(fill="#00000000", colour="grey"))
 p <- cowplot::plot_grid(p1, p2, ncol=1, rel_heights = c(31.5/50, 1))
 ggsave("graphics/profiles.png", p, width=8, height=7, units="in")
+ggsave("graphics/profiles.eps", p, width=8, height=7, units="in")
 
 ################################################################################
 # Average densities and biomasses by lake
@@ -319,6 +325,7 @@ p2 <- ggplot(net.totals.barplot, aes(x=trip, y=biomass, fill=Lake)) +
         plot.title=element_text(hjust=0))
 p <- gridExtra::grid.arrange(p1, p2, ncol=1)
 ggsave("graphics/seasonal_biomass.png", p, width=6, height=5, units="in")
+ggsave("graphics/seasonal_biomass.eps", p, width=6, height=5, units="in")
 
 
 # Regression of net and acoustic biomass
@@ -426,6 +433,34 @@ lines(0:15, predict(mod.net.acoustic.outlier, newdata=list(biomass_acoustic=0:15
 par(mar=mar.default)
 dev.off()
 
+png("graphics/net_vs_acoustics.png", width=1000, height=700, pointsize = 24)
+mar.default <- par("mar")
+par(mar=c(5, 5, 3, 2))
+plot(biovolume_gc ~ biomass_acoustic, net.echo.sub, xlim=c(0, 12), ylim=c(-0.1, 3),
+     pch=16, bty='n', xlab=expression(Acoustic~biomass~(g~m^-3)),
+     ylab=expression(Net~biovolume~(mL~m^-3)))
+points(biovolume_gc ~ biomass_acoustic, net.echo[5, ], pch=1)
+text(net.echo$label.x, net.echo$label.y, paste(net.echo$Lake, net.echo$trip),
+     pos=4, cex=0.8, col="#666666")
+lines(0:15, predict(mod.net.acoustic, newdata=list(biomass_acoustic=0:15)))
+lines(0:15, predict(mod.net.acoustic.outlier, newdata=list(biomass_acoustic=0:15)), lty=2)
+par(mar=mar.default)
+dev.off()
+
+setEPS()
+postscript("graphics/net_vs_acoustics.eps")
+mar.default <- par("mar")
+par(mar=c(5, 5, 3, 2))
+plot(biovolume_gc ~ biomass_acoustic, net.echo.sub, xlim=c(0, 12), ylim=c(-0.1, 3),
+     pch=16, bty='n', xlab=expression(Acoustic~biomass~(g~m^-3)),
+     ylab=expression(Net~biovolume~(mL~m^-3)))
+points(biovolume_gc ~ biomass_acoustic, net.echo[5, ], pch=1)
+text(net.echo$label.x, net.echo$label.y, paste(net.echo$Lake, net.echo$trip),
+     pos=4, cex=0.8, col="#666666")
+lines(0:15, predict(mod.net.acoustic, newdata=list(biomass_acoustic=0:15)))
+lines(0:15, predict(mod.net.acoustic.outlier, newdata=list(biomass_acoustic=0:15)), lty=2)
+par(mar=mar.default)
+dev.off()
 
 ################################################################################
 # Track lines

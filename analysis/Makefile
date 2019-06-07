@@ -1,25 +1,17 @@
 GRAPHICS_DIR = graphics/
-GRAPHICS = $(addprefix $(GRAPHICS_DIR),\
-		  maps.png \
-		  example_echograms.png \
-		  echo_zooplankton.png \
-		  echo_fish.png \
-		  echo_classification.png \
-		  dB_difference.png\
-		  profiles.png \
-		  net_vs_acoustics.png \
-		  zoop_length_indy_tahoe.png \
-		  zoop_length_cherry_eleanor.png\
-		  zoop_composition_indy_tahoe.png \
-		  zoop_composition_cherry_eleanor.png\
-		  seasonal_biomass.png \
-		  variograms.png \
-		  inlet_distance.png)
-TABLES = nets/ts.display.table.csv\
-		  nets/ts.display.table.fish.csv\
-		  nets/zoop_composition_cherry_eleanor.csv\
-		  nets/zoop_composition_indy_tahoe.csv\
-		  lake_biomass.csv
+FIGURES = $(addprefix $(GRAPHICS_DIR),\
+		  maps.eps \
+		  ctd.eps \
+		  example_echograms.tiff \
+		  profiles.eps \
+		  net_vs_acoustics.eps \
+		  seasonal_biomass.eps \
+		  variograms.eps)
+TABLES = nets/ts.display.table.csv \
+		  nets/ts.display.table.fish.csv \
+		  nets/zoop_composition_cherry_eleanor.csv \
+		  nets/zoop_composition_indy_tahoe.csv \
+		  lake_biomass_display.csv
 
 all : $(FIGURES) $(TABLES)
 	
@@ -28,49 +20,25 @@ all : $(FIGURES) $(TABLES)
 # Figure recipes
 ######################################################	
 
-graphics/maps.png: maps.R tracks.Rdata lake_outlines.Rdata
+graphics/maps.eps: maps.R tracks.Rdata lake_outlines.Rdata
 	R CMD BATCH maps.R /dev/null
 
-graphics/echo_zooplankton.png: acoustics.R acoustics.Rdata
-	R CMD BATCH acoustics.R /dev/null
+graphics/ctd.eps: ctd.R 
+	R CMD BATCH ctd.R /dev/null
 
-graphics/echo_fish.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv
-	R CMD BATCH acoustics.R /dev/null
-
-graphics/echo_classification.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv
-	R CMD BATCH acoustics.R /dev/null
-
-graphics/dB_difference.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv
-	R CMD BATCH acoustics.R /dev/null
-
-graphics/example_echograms.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv fish_TS.csv
+graphics/example_echograms.tiff: acoustics.R acoustics.Rdata nets/zoop_ts.csv fish_TS.csv
 	R CMD BATCH acoustics.R /dev/null
 	
-graphics/profiles.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv fish_TS.csv
+graphics/profiles.eps: acoustics.R acoustics.Rdata nets/zoop_ts.csv fish_TS.csv
 	R CMD BATCH acoustics.R /dev/null
 	
-graphics/seasonal_biomass.png: acoustics.R acoustics.Rdata nets/zoop_ts.csv fish_TS.csv
+graphics/seasonal_biomass.eps: acoustics.R acoustics.Rdata nets/zoop_ts.csv fish_TS.csv
 	R CMD BATCH acoustics.R /dev/null
 	
-graphics/net_vs_acoustics.png: acoustics.R acoustics.Rdata
+graphics/net_vs_acoustics.eps: acoustics.R acoustics.Rdata
 	R CMD BATCH acoustics.R /dev/null
 
-graphics/zoop_length_indy_tahoe.png: nets.R net_data.Rdata
-	R CMD BATCH nets.R /dev/null
-
-graphics/zoop_length_cherry_eleanor.png: nets.R net_data.Rdata
-	R CMD BATCH nets.R /dev/null
-
-graphics/zoop_composition_indy_tahoe.png: nets.R net_data.Rdata
-	R CMD BATCH nets.R /dev/null
-
-graphics/zoop_composition_cherry_eleanor.png: nets.R net_data.Rdata
-	R CMD BATCH nets.R /dev/null
-
-graphics/inlet_distance.png: tracks.Rdata lake_outlines.Rdata
-	R CMD BATCH geostats.R /dev/null
-
-graphics/variograms.png: tracks.Rdata lake_outlines.Rdata
+graphics/variograms.eps: tracks.Rdata lake_outlines.Rdata
 	R CMD BATCH geostats.R /dev/null
 
 ######################################################	
@@ -95,10 +63,10 @@ nets/zoop_composition_cherry_eleanor.csv: nets.R net_data.Rdata
 nets/zoop_composition_indy_tahoe.csv: nets.R net_data.Rdata
 	R CMD BATCH nets.R /dev/null
 
-lake_biomass.csv: acoustics.R acoustics.Rdata net_data.Rdata nets/zoop_ts.csv fish_TS.csv
-	R CMD BATCH nets.R /dev/null
+lake_biomass_display.csv: acoustics.R acoustics.Rdata net_data.Rdata nets/zoop_ts.csv fish_TS.csv
+	R CMD BATCH acoustics.R /dev/null
 
-######################################################	
+#####################################################	
 # Data formatting and downloads
 ######################################################	
 
