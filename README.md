@@ -1,15 +1,33 @@
-Rim Fire Analysis
+Seasonal changes in the biomass, distribution, and patchiness of zooplankton and fish in four lakes in the Sierra Nevada, California
 ----------------
+Samuel S. Urmy and Joseph D. Warren
+Freshwater Biology *** (***), ***-***
 
-Data and analysis scripts for the Rim Fire project.
+DOI: ***
 
-
-All the scripts needed to reproduce the analysis in this paper are in the analysis folder.  To run them, follow the steps below:
+This repository contains the data and scripts needed to reproduce the analysis in this paper.
+To run them, follow the steps below:
 
 1. Clone this repository to your computer.
 2. Make sure you have the necessary software installed. You will need
 	1. R (http://r-project.org/) and the following libraries:
-	2. Julia (http://julialang.org/) v0.5 or higher, and the following packages:
+	  * `dplyr`
+	  * `ggplot2`
+	  * `ggrepel`
+	  * `gridExtra`
+	  * `gstat`
+	  * `lubridate`
+	  * `nlme`
+	  * `reshape2`
+	  * `scales`
+	  * `tidyr`
+	  * `viridis`
+	2. Julia (http://julialang.org/) v0.7 or higher, and the following packages:
+	  * `DataFrames`
+	  * `DataFramesMeta`
+	  * `Distributions`
+	  * `FileIO`
+	  * `SDWBA`
 	3. GNU Make (should come pre-installed on Linux and MacOS).
 3. Open a terminal and `cd` into the `analysis` directory
 4. Type `make` and hit Enter, which will run all the scripts in the correct order and produce the figures.  The first time you run it, it will download several large shapefiles from the USGS, which may take a little while.
