@@ -2,9 +2,9 @@ Seasonal changes in the biomass, distribution, and patchiness of zooplankton and
 ----------------
 Samuel S. Urmy and Joseph D. Warren
 
-Freshwater Biology *** (***), ***-***
+Freshwater Biology 2019, 00: 1-18
 
-DOI: ***
+DOI: https://doi.org/10.1111/fwb.13362
 
 This repository contains the data and scripts needed to reproduce the analysis in this paper.
 To run them, follow the steps below:
